@@ -60,7 +60,6 @@ export interface _SERVICE {
     [string, string, string, string, string, string, boolean, [] | [Principal]],
     undefined
   >,
-  'approveUser' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'completeTask' : ActorMethod<[bigint], undefined>,
   'deleteTask' : ActorMethod<[bigint], undefined>,

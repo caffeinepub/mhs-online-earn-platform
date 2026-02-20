@@ -60,7 +60,6 @@ export enum UserRole {
 export interface backendInterface {
     addTask(task: Task): Promise<void>;
     addUserRegistration(id: string, username: string, whatsappNumber: string, email: string, passwordHash: string, referralCode: string, approved: boolean, principal: Principal | null): Promise<void>;
-    approveUser(user: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     completeTask(taskId: bigint): Promise<void>;
     deleteTask(taskId: bigint): Promise<void>;

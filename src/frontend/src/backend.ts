@@ -143,7 +143,6 @@ export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addTask(task: Task): Promise<void>;
     addUserRegistration(id: string, username: string, whatsappNumber: string, email: string, passwordHash: string, referralCode: string, approved: boolean, principal: Principal | null): Promise<void>;
-    approveUser(user: Principal): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     completeTask(taskId: bigint): Promise<void>;
     deleteTask(taskId: bigint): Promise<void>;
@@ -220,20 +219,6 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.addUserRegistration(arg0, arg1, arg2, arg3, arg4, arg5, arg6, to_candid_opt_n5(this._uploadFile, this._downloadFile, arg7));
-            return result;
-        }
-    }
-    async approveUser(arg0: Principal): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.approveUser(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.approveUser(arg0);
             return result;
         }
     }

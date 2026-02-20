@@ -1,77 +1,73 @@
 {
   "kind": "build_request",
-  "title": "Fix admin panel black screen routing issue in production",
+  "title": "Auto-approve new user registrations and update success messaging",
   "projectName": "MHS Online Earn Platform",
-  "priority": "high",
+  "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-28",
-      "text": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment at mhs-online-earn-platform.caffeine.xyz",
-      "target": "frontend",
+      "id": "REQ-31",
+      "text": "Modify the user registration backend in backend/main.mo to set the user's approval status to 'Approved' by default when creating a new user account, eliminating the need for manual admin approval",
+      "target": "backend",
       "source": {
         "messageIds": [
           "msg-6"
         ],
         "quotes": [
-          "The /admin-panel is showing a black screen even after production deployment"
+          "Set User Status to 'Approved' by default: When a new user registers, their account should be automatically approved. No manual action should be required from the admin."
         ]
       },
       "acceptanceCriteria": [
-        "The /admin-panel route loads without a black screen on the live domain",
-        "The admin login form is visible and functional at https://mhs-online-earn-platform.caffeine.xyz/admin-panel",
-        "Users can successfully navigate to /admin-panel from the browser address bar",
-        "No console errors related to routing appear when accessing /admin-panel"
+        "New user registrations automatically receive 'Approved' status in the backend users HashMap",
+        "The approved field is set to true during user creation",
+        "No admin action is required to activate new user accounts"
       ]
     },
     {
-      "id": "REQ-29",
-      "text": "Verify that the admin login functionality works correctly at /admin-panel using the credentials 'admin' and 'habibur123', and successfully redirects to the admin panel dashboard after authentication",
+      "id": "REQ-32",
+      "text": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-6"
         ],
         "quotes": [
-          "Please fix the routing for the Admin Panel immediately so I can log in using 'admin' and 'habibur123'"
+          "Remove the 'Pending Approval' message: Instead, show a 'Registration Successful! You can now log in' message."
         ]
       },
       "acceptanceCriteria": [
-        "The admin login form accepts username 'admin' and password 'habibur123'",
-        "Successful authentication redirects to the admin panel dashboard displaying the UserManagementTable and TaskManagementPanel components",
-        "Authentication state persists in localStorage",
-        "Invalid credentials display an appropriate error message"
+        "Success toast or message displays 'Registration Successful! You can now log in' after successful registration",
+        "No pending approval messaging is shown to the user",
+        "Message appears immediately after registration completes"
       ]
     },
     {
-      "id": "REQ-30",
-      "text": "Ensure the /admin-panel route is accessible on the live production domain without requiring Internet Identity authentication",
+      "id": "REQ-33",
+      "text": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-6"
         ],
         "quotes": [
-          "Ensure it is accessible on the live domain"
+          "Auto-Redirect: After clicking Register, the user should be automatically redirected to the Login page."
         ]
       },
       "acceptanceCriteria": [
-        "The /admin-panel route loads using local authentication only (no Internet Identity required)",
-        "The route works correctly in both development and production environments",
-        "The AdminLogin page renders properly at /admin-panel before authentication",
-        "After successful login, the AdminPanel page displays with user and task management interfaces"
+        "After successful registration, user is automatically navigated to /login route",
+        "Redirect occurs after the success message is displayed",
+        "No manual navigation by user is required"
       ]
     }
   ],
   "constraints": [
-    "Use the existing local authentication system with hardcoded credentials (admin/habibur123)",
-    "Do not require Internet Identity authentication for admin panel access",
-    "Maintain the existing two-step admin flow: AdminLogin page → AdminPanel dashboard"
+    "Maintain existing user data structure in backend/main.mo",
+    "Do not modify the admin panel's user management functionality",
+    "Preserve all existing user registration fields (username, WhatsApp number, group number, email, password, referral code)"
   ],
   "nonGoals": [
-    "Implementing a new authentication system for admin users",
-    "Adding additional admin roles or permissions",
-    "Modifying the admin credentials or authentication method",
-    "Creating new admin features beyond fixing the routing issue"
+    "Changing the admin panel user approval interface",
+    "Modifying any other authentication or login flows",
+    "Altering the referral system or user dashboard access logic"
   ],
   "imageRequirements": {
     "required": [],

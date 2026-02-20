@@ -109,7 +109,7 @@ export default function Register() {
         passwordHash: formData.password,
         referralCode: userReferralCode,
         principal: identity.getPrincipal().toString(),
-        isApproved: false,
+        isApproved: true,
         referrals: [],
         tasks: [],
         completedTasks: [],
@@ -119,7 +119,7 @@ export default function Register() {
       await registerMutation.mutateAsync(profile);
       
       // Show success message
-      toast.success('Registration Successful! Redirecting to login...');
+      toast.success('Registration Successful! You can now log in');
       
       // Wait 2 seconds before redirecting to allow user to see the success message
       setTimeout(() => {

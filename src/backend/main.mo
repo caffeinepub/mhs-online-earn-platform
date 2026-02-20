@@ -158,7 +158,7 @@ actor {
   };
 
   // User registration - accessible to guests (anonymous principals)
-  // Users start as unapproved and do NOT get user role until approved by admin
+  // Users start as approved by default and get user role immediately
   public shared ({ caller }) func registerUser(profile : TasksMetadata) : async () {
     // Check if user already exists
     if (tasksData.containsKey(caller)) {
@@ -183,60 +183,35 @@ actor {
     // Prepare user registration ID from username
     let registrationId = profile.username;
 
-    // Prepare user registration data
+    // Prepare user registration data (approved by default)
     let newUserRegistration : UserRegistration = {
       username = profile.username;
       whatsappNumber = profile.whatsappNumber;
       email = profile.email;
       passwordHash = profile.passwordHash;
       referralCode = profile.referralCode;
-      isApproved = false;
+      isApproved = true; // Approved by default
       principal = ?caller;
     };
 
     // Store registration
     users.add(registrationId, newUserRegistration);
 
-    // Prepare full profile (not approved yet)
+    // Prepare full profile (approved by default)
     let newProfile = {
       profile with
-      isApproved = false;
+      isApproved = true; // Approved by default
       principal = caller.toText();
     };
 
     // Store user data
     tasksData.add(caller, newProfile);
+
+    // Assign user role immediately
+    AccessControl.assignRole(accessControlState, caller, caller, #user);
   };
 
-  // Admin function to approve users
-  // This is where the user role gets assigned
-  public shared ({ caller }) func approveUser(user : Principal) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can approve users");
-    };
-
-    let userProfile = switch (tasksData.get(user)) {
-      case (null) { Runtime.trap("User does not exist") };
-      case (?profile) { profile };
-    };
-
-    // Update approval status in tasksData
-    let approvedProfile = { userProfile with isApproved = true };
-    tasksData.add(user, approvedProfile);
-
-    // Update approval status in users map
-    let registrationId = userProfile.username;
-    switch (users.get(registrationId)) {
-      case (?registration) {
-        let approvedRegistration = { registration with isApproved = true };
-        users.add(registrationId, approvedRegistration);
-      };
-      case (null) { /* Registration might not exist, continue */ };
-    };
-
-    // Assign user role after approval
-    AccessControl.assignRole(accessControlState, caller, user, #user);
-  };
+  // Removed approveUser function as approvals are now automatic
 
   // Admin function to get all users
   public query ({ caller }) func getAllUsers() : async [TasksMetadata] {

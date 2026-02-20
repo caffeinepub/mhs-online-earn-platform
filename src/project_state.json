@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 17,
   "summary": "Professional earning platform 'MHS Online Earn Platform' (formerly 'MHS★Online Earn Platform') with user registration, daily task system (10+ tasks), referral tracking with unique links, secure admin panel for user/task management, navigation menu (Home, Job Task, Withdraw, Refer & Earn, Payment Proof, Support), Facebook integration for support, dedicated Job Task page with timer functionality, and mobile-optimized hamburger menu. Registration backend fully functional with live registration recording.",
   "architectural_notes": [
     "Use simple local authentication for admin panel - no Internet Identity or external redirects",
@@ -17,7 +17,7 @@
   "known_issues": [
     "/admin-panel route showing black screen in production - routing not properly configured for live domain"
   ],
-  "isFixRequest": true,
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-create-a-hero-section-on-the-home-page-displaying-total-users-count-always-active-status-text-and-two-call-to-action-buttons-labeled-start-from-now-and-help-support",
@@ -218,6 +218,22 @@
         "REQ-30"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-registration-success-message-in-frontend-src-pages-register-tsx-to-display-registration-successful-you-can-now-log-in-instead-of-any-pending-approval-message",
+      "title": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-registration-flow-in-frontend-src-pages-register-tsx-automatically-redirects-users-to-the-login-page-immediately-after-successful-registration",
+      "title": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -336,6 +352,20 @@
       "summary": "Verify and ensure all backend functions are properly configured to work with the live domain mhs-online-earn-platform.caffeine.xyz",
       "reqIds": [
         "REQ-27"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Set user registration status to 'Approved' by default (no manual admin approval needed), update registration success message to 'Registration Successful! You can now log in', and ensure auto-redirect to /login page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Modify the user registration backend in backend/main.mo to set the user's approval status to 'Approved' by default when creating a new user account, eliminating the need for manual admin approval",
+      "reqIds": [
+        "REQ-31"
       ],
       "status": "pending"
     }

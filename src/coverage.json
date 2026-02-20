@@ -1,66 +1,59 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T11:17:13.963Z",
+  "generatedAt": "2026-02-20T11:27:31.362Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 3,
-    "implemented": 3,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-28",
-        "summary": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment at mhs-online-earn-platform.caffeine.xyz",
+        "id": "REQ-31",
+        "summary": "Modify the user registration backend in backend/main.mo to set the user's approval status to 'Approved' by default when creating a new user account, eliminating the need for manual admin approval",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-32",
+        "summary": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/AdminLogin.tsx"
+          "frontend/src/pages/Register.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/AdminLogin.tsx"
+          "frontend/src/pages/Register.tsx"
         ]
       },
       {
-        "id": "REQ-29",
-        "summary": "Verify that the admin login functionality works correctly at /admin-panel using the credentials 'admin' and 'habibur123', and successfully redirects to the admin panel dashboard after authentication",
+        "id": "REQ-33",
+        "summary": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/AdminLogin.tsx",
-          "frontend/src/pages/AdminPanel.tsx"
+          "frontend/src/pages/Register.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/AdminLogin.tsx",
-          "frontend/src/pages/AdminPanel.tsx"
-        ]
-      },
-      {
-        "id": "REQ-30",
-        "summary": "Ensure the /admin-panel route is accessible on the live production domain without requiring Internet Identity authentication",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/AdminLogin.tsx",
-          "frontend/src/pages/AdminPanel.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/pages/AdminLogin.tsx",
-          "frontend/src/pages/AdminPanel.tsx"
+          "frontend/src/pages/Register.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/pages/AdminLogin.tsx",
-    "frontend/src/pages/AdminPanel.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/UserManagementTable.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/Register.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

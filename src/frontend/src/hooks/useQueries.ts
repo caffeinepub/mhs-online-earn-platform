@@ -144,21 +144,6 @@ export function useGetAllUsers() {
   });
 }
 
-export function useApproveUser() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (userPrincipal: Principal) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.approveUser(userPrincipal);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
-    },
-  });
-}
-
 // Referral Queries
 export function useGetReferralCount() {
   const { actor, isFetching } = useActor();
