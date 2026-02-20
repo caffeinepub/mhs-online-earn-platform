@@ -1,90 +1,77 @@
 {
   "kind": "build_request",
-  "title": "Replace homepage background with user photo and apply dark overlay with fixed positioning",
-  "projectName": "MHS★Online Earn Platform",
-  "priority": "normal",
+  "title": "Fix admin panel black screen routing issue in production",
+  "projectName": "MHS Online Earn Platform",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-16",
-      "text": "Remove the existing old-man picture (1770720033234.jpg) from the Home page hero section entirely",
+      "id": "REQ-28",
+      "text": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment at mhs-online-earn-platform.caffeine.xyz",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-6"
         ],
         "quotes": [
-          "Remove the old old-man picture completely"
+          "The /admin-panel is showing a black screen even after production deployment"
         ]
       },
       "acceptanceCriteria": [
-        "The circular user photo previously displayed below the 'MHS★Online Earn Platform' title is removed from the DOM",
-        "No references to 1770720033234.jpg remain in the Home page component"
+        "The /admin-panel route loads without a black screen on the live domain",
+        "The admin login form is visible and functional at https://mhs-online-earn-platform.caffeine.xyz/admin-panel",
+        "Users can successfully navigate to /admin-panel from the browser address bar",
+        "No console errors related to routing appear when accessing /admin-panel"
       ]
     },
     {
-      "id": "REQ-17",
-      "text": "Set the uploaded user photo (1770720033234-1.jpg) as the background image for the Hero Section on the Home page",
+      "id": "REQ-29",
+      "text": "Verify that the admin login functionality works correctly at /admin-panel using the credentials 'admin' and 'habibur123', and successfully redirects to the admin panel dashboard after authentication",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-6"
         ],
         "quotes": [
-          "Set my uploaded photo as the background for the Hero Section or the entire landing page"
+          "Please fix the routing for the Admin Panel immediately so I can log in using 'admin' and 'habibur123'"
         ]
       },
       "acceptanceCriteria": [
-        "The uploaded photo 1770720033234-1.jpg is rendered as a background image covering the hero section",
-        "Background image uses CSS background-size: cover and background-position: center for proper display",
-        "The hero section maintains its existing layout with all text and buttons visible"
+        "The admin login form accepts username 'admin' and password 'habibur123'",
+        "Successful authentication redirects to the admin panel dashboard displaying the UserManagementTable and TaskManagementPanel components",
+        "Authentication state persists in localStorage",
+        "Invalid credentials display an appropriate error message"
       ]
     },
     {
-      "id": "REQ-18",
-      "text": "Apply a dark transparent overlay (rgba(0, 0, 0, 0.5) or similar) on top of the background image to ensure white text remains clearly readable",
+      "id": "REQ-30",
+      "text": "Ensure the /admin-panel route is accessible on the live production domain without requiring Internet Identity authentication",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-6"
         ],
         "quotes": [
-          "Use a dark overlay (transparent black layer) over the image so that the white text ('MHS★Online Earn Platform') remains clearly readable"
+          "Ensure it is accessible on the live domain"
         ]
       },
       "acceptanceCriteria": [
-        "A semi-transparent black overlay is applied between the background image and the hero section content",
-        "The 'MHS★Online Earn Platform' title text and all other white text elements have sufficient contrast for readability",
-        "The overlay does not obscure the background image completely but provides clear text legibility"
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "text": "Configure the background image with CSS background-attachment: fixed so it stays in place when scrolling the page",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Make the image 'Fixed' so it stays in place when scrolling"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The background image uses background-attachment: fixed CSS property",
-        "When scrolling the page, the background image remains stationary while content scrolls over it",
-        "The fixed background effect works on desktop and tablet viewports (may fall back to scroll on mobile for performance)"
+        "The /admin-panel route loads using local authentication only (no Internet Identity required)",
+        "The route works correctly in both development and production environments",
+        "The AdminLogin page renders properly at /admin-panel before authentication",
+        "After successful login, the AdminPanel page displays with user and task management interfaces"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the existing Header component or navigation structure",
-    "Preserve all existing hero section content including title text, user count, status text, and CTA buttons",
-    "Do not change the backend or any data models"
+    "Use the existing local authentication system with hardcoded credentials (admin/habibur123)",
+    "Do not require Internet Identity authentication for admin panel access",
+    "Maintain the existing two-step admin flow: AdminLogin page → AdminPanel dashboard"
   ],
   "nonGoals": [
-    "Modifying the circular profile photo styling (that photo is being removed entirely)",
-    "Changing the color theme or existing blue/white styling beyond the background overlay",
-    "Adding new hero section content or features"
+    "Implementing a new authentication system for admin users",
+    "Adding additional admin roles or permissions",
+    "Modifying the admin credentials or authentication method",
+    "Creating new admin features beyond fixing the routing issue"
   ],
   "imageRequirements": {
     "required": [],

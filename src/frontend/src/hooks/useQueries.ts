@@ -1,13 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { Principal } from '@dfinity/principal';
-import type { UserProfile, Task } from '../backend';
+import type { TasksMetadata, Task } from '../backend';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
-  const query = useQuery<UserProfile | null>({
+  const query = useQuery<TasksMetadata | null>({
     queryKey: ['currentUserProfile'],
     queryFn: async () => {
       if (!actor) throw new Error('Actor not available');
@@ -29,7 +29,7 @@ export function useSaveCallerUserProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (profile: UserProfile) => {
+    mutationFn: async (profile: TasksMetadata) => {
       if (!actor) throw new Error('Actor not available');
       return actor.saveCallerUserProfile(profile);
     },
@@ -45,7 +45,7 @@ export function useRegisterUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (profile: UserProfile) => {
+    mutationFn: async (profile: TasksMetadata) => {
       if (!actor) throw new Error('Actor not available');
       return actor.registerUser(profile);
     },
@@ -134,7 +134,7 @@ export function useDeleteTask() {
 export function useGetAllUsers() {
   const { actor, isFetching } = useActor();
 
-  return useQuery<UserProfile[]>({
+  return useQuery<TasksMetadata[]>({
     queryKey: ['allUsers'],
     queryFn: async () => {
       if (!actor) return [];

@@ -25,14 +25,24 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const UserRegistration = IDL.Record({
+  'isApproved' : IDL.Bool,
+  'principal' : IDL.Opt(IDL.Principal),
+  'referralCode' : IDL.Text,
+  'username' : IDL.Text,
+  'email' : IDL.Text,
+  'whatsappNumber' : IDL.Text,
+  'passwordHash' : IDL.Text,
+});
 export const Time = IDL.Int;
 export const TaskCompletion = IDL.Record({
   'taskId' : IDL.Nat,
   'timestamp' : Time,
 });
-export const UserProfile = IDL.Record({
+export const TasksMetadata = IDL.Record({
   'tasks' : IDL.Vec(Task),
   'isApproved' : IDL.Bool,
+  'principal' : IDL.Text,
   'referralCode' : IDL.Text,
   'groupNumber' : IDL.Text,
   'username' : IDL.Text,
@@ -52,18 +62,28 @@ export const TaskUpdate = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addTask' : IDL.Func([Task], [], []),
+  'addUserRegistration' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Text,
+        IDL.Bool,
+        IDL.Opt(IDL.Principal),
+      ],
+      [],
+      [],
+    ),
   'approveUser' : IDL.Func([IDL.Principal], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'completeTask' : IDL.Func([IDL.Nat], [], []),
   'deleteTask' : IDL.Func([IDL.Nat], [], []),
-  'exists' : IDL.Func(
-      [IDL.Vec(TaskCompletion), IDL.Nat],
-      [IDL.Bool],
-      ['query'],
-    ),
+  'getAllRegistrations' : IDL.Func([], [IDL.Vec(UserRegistration)], ['query']),
   'getAllTasks' : IDL.Func([], [IDL.Vec(Task)], ['query']),
-  'getAllUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
-  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getAllUsers' : IDL.Func([], [IDL.Vec(TasksMetadata)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(TasksMetadata)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCompletedTasks' : IDL.Func(
       [IDL.Principal],
@@ -73,6 +93,11 @@ export const idlService = IDL.Service({
   'getDailyTasks' : IDL.Func([IDL.Principal], [IDL.Vec(Task)], ['query']),
   'getReferralCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getReferralEarnings' : IDL.Func([], [IDL.Int], ['query']),
+  'getRegistration' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(UserRegistration)],
+      ['query'],
+    ),
   'getTaskById' : IDL.Func([IDL.Nat], [IDL.Opt(Task)], ['query']),
   'getTaskStats' : IDL.Func(
       [],
@@ -89,7 +114,7 @@ export const idlService = IDL.Service({
   'getUserPoints' : IDL.Func([IDL.Principal], [IDL.Int], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
-      [IDL.Opt(UserProfile)],
+      [IDL.Opt(TasksMetadata)],
       ['query'],
     ),
   'getWeeklyTaskStats' : IDL.Func(
@@ -99,11 +124,10 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isLoggedIn' : IDL.Func([], [IDL.Bool], ['query']),
-  'legacyAdminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
   'login' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
   'logout' : IDL.Func([], [], []),
-  'registerUser' : IDL.Func([UserProfile], [], []),
-  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'registerUser' : IDL.Func([TasksMetadata], [], []),
+  'saveCallerUserProfile' : IDL.Func([TasksMetadata], [], []),
   'updateTasks' : IDL.Func([IDL.Vec(TaskUpdate)], [], []),
 });
 
@@ -127,11 +151,21 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const UserRegistration = IDL.Record({
+    'isApproved' : IDL.Bool,
+    'principal' : IDL.Opt(IDL.Principal),
+    'referralCode' : IDL.Text,
+    'username' : IDL.Text,
+    'email' : IDL.Text,
+    'whatsappNumber' : IDL.Text,
+    'passwordHash' : IDL.Text,
+  });
   const Time = IDL.Int;
   const TaskCompletion = IDL.Record({ 'taskId' : IDL.Nat, 'timestamp' : Time });
-  const UserProfile = IDL.Record({
+  const TasksMetadata = IDL.Record({
     'tasks' : IDL.Vec(Task),
     'isApproved' : IDL.Bool,
+    'principal' : IDL.Text,
     'referralCode' : IDL.Text,
     'groupNumber' : IDL.Text,
     'username' : IDL.Text,
@@ -151,18 +185,32 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addTask' : IDL.Func([Task], [], []),
+    'addUserRegistration' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Text,
+          IDL.Bool,
+          IDL.Opt(IDL.Principal),
+        ],
+        [],
+        [],
+      ),
     'approveUser' : IDL.Func([IDL.Principal], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'completeTask' : IDL.Func([IDL.Nat], [], []),
     'deleteTask' : IDL.Func([IDL.Nat], [], []),
-    'exists' : IDL.Func(
-        [IDL.Vec(TaskCompletion), IDL.Nat],
-        [IDL.Bool],
+    'getAllRegistrations' : IDL.Func(
+        [],
+        [IDL.Vec(UserRegistration)],
         ['query'],
       ),
     'getAllTasks' : IDL.Func([], [IDL.Vec(Task)], ['query']),
-    'getAllUsers' : IDL.Func([], [IDL.Vec(UserProfile)], ['query']),
-    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getAllUsers' : IDL.Func([], [IDL.Vec(TasksMetadata)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(TasksMetadata)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCompletedTasks' : IDL.Func(
         [IDL.Principal],
@@ -172,6 +220,11 @@ export const idlFactory = ({ IDL }) => {
     'getDailyTasks' : IDL.Func([IDL.Principal], [IDL.Vec(Task)], ['query']),
     'getReferralCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getReferralEarnings' : IDL.Func([], [IDL.Int], ['query']),
+    'getRegistration' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(UserRegistration)],
+        ['query'],
+      ),
     'getTaskById' : IDL.Func([IDL.Nat], [IDL.Opt(Task)], ['query']),
     'getTaskStats' : IDL.Func(
         [],
@@ -188,7 +241,7 @@ export const idlFactory = ({ IDL }) => {
     'getUserPoints' : IDL.Func([IDL.Principal], [IDL.Int], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
-        [IDL.Opt(UserProfile)],
+        [IDL.Opt(TasksMetadata)],
         ['query'],
       ),
     'getWeeklyTaskStats' : IDL.Func(
@@ -198,11 +251,10 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isLoggedIn' : IDL.Func([], [IDL.Bool], ['query']),
-    'legacyAdminLogin' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'login' : IDL.Func([IDL.Text, IDL.Text], [IDL.Bool], []),
     'logout' : IDL.Func([], [], []),
-    'registerUser' : IDL.Func([UserProfile], [], []),
-    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'registerUser' : IDL.Func([TasksMetadata], [], []),
+    'saveCallerUserProfile' : IDL.Func([TasksMetadata], [], []),
     'updateTasks' : IDL.Func([IDL.Vec(TaskUpdate)], [], []),
   });
 };

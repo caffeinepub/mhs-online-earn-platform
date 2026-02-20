@@ -26,10 +26,10 @@ export interface TaskUpdate {
   'updatedTitle' : string,
   'taskId' : bigint,
 }
-export type Time = bigint;
-export interface UserProfile {
+export interface TasksMetadata {
   'tasks' : Array<Task>,
   'isApproved' : boolean,
+  'principal' : string,
   'referralCode' : string,
   'groupNumber' : string,
   'username' : string,
@@ -40,25 +40,40 @@ export interface UserProfile {
   'passwordHash' : string,
   'totalEarnings' : bigint,
 }
+export type Time = bigint;
+export interface UserRegistration {
+  'isApproved' : boolean,
+  'principal' : [] | [Principal],
+  'referralCode' : string,
+  'username' : string,
+  'email' : string,
+  'whatsappNumber' : string,
+  'passwordHash' : string,
+}
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addTask' : ActorMethod<[Task], undefined>,
+  'addUserRegistration' : ActorMethod<
+    [string, string, string, string, string, string, boolean, [] | [Principal]],
+    undefined
+  >,
   'approveUser' : ActorMethod<[Principal], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'completeTask' : ActorMethod<[bigint], undefined>,
   'deleteTask' : ActorMethod<[bigint], undefined>,
-  'exists' : ActorMethod<[Array<TaskCompletion>, bigint], boolean>,
+  'getAllRegistrations' : ActorMethod<[], Array<UserRegistration>>,
   'getAllTasks' : ActorMethod<[], Array<Task>>,
-  'getAllUsers' : ActorMethod<[], Array<UserProfile>>,
-  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getAllUsers' : ActorMethod<[], Array<TasksMetadata>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [TasksMetadata]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCompletedTasks' : ActorMethod<[Principal], Array<bigint>>,
   'getDailyTasks' : ActorMethod<[Principal], Array<Task>>,
   'getReferralCount' : ActorMethod<[], bigint>,
   'getReferralEarnings' : ActorMethod<[], bigint>,
+  'getRegistration' : ActorMethod<[string], [] | [UserRegistration]>,
   'getTaskById' : ActorMethod<[bigint], [] | [Task]>,
   'getTaskStats' : ActorMethod<
     [],
@@ -66,18 +81,17 @@ export interface _SERVICE {
   >,
   'getTasksByRewardForCaller' : ActorMethod<[], Array<Task>>,
   'getUserPoints' : ActorMethod<[Principal], bigint>,
-  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [TasksMetadata]>,
   'getWeeklyTaskStats' : ActorMethod<
     [Principal],
     { 'completedTasks' : bigint, 'totalPoints' : bigint }
   >,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isLoggedIn' : ActorMethod<[], boolean>,
-  'legacyAdminLogin' : ActorMethod<[string, string], boolean>,
   'login' : ActorMethod<[string, string], boolean>,
   'logout' : ActorMethod<[], undefined>,
-  'registerUser' : ActorMethod<[UserProfile], undefined>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'registerUser' : ActorMethod<[TasksMetadata], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[TasksMetadata], undefined>,
   'updateTasks' : ActorMethod<[Array<TaskUpdate>], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

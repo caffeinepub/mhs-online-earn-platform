@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
-  "summary": "Professional earning platform 'MHS★Online Earn Platform' with user registration, daily task system (10+ tasks), referral tracking with unique links, secure admin panel for user/task management, navigation menu (Home, Job Task, Withdraw, Refer & Earn, Payment Proof, Support), Facebook integration for support, dedicated Job Task page with timer functionality, and mobile-optimized hamburger menu",
+  "projectStateVersion": 15,
+  "summary": "Professional earning platform 'MHS Online Earn Platform' (formerly 'MHS★Online Earn Platform') with user registration, daily task system (10+ tasks), referral tracking with unique links, secure admin panel for user/task management, navigation menu (Home, Job Task, Withdraw, Refer & Earn, Payment Proof, Support), Facebook integration for support, dedicated Job Task page with timer functionality, and mobile-optimized hamburger menu. Registration backend fully functional with live registration recording.",
   "architectural_notes": [
     "Use simple local authentication for admin panel - no Internet Identity or external redirects",
     "Mobile-first responsive design approach",
@@ -9,10 +9,15 @@
     "Implement hamburger menu for mobile navigation",
     "Replace WhatsApp integration with Facebook profile link throughout",
     "Add timer functionality (10 seconds) for job task completion",
-    "Use uploaded user photo as fixed background for hero section with dark overlay for text readability"
+    "Use uploaded user photo as fixed background for hero section with dark overlay for text readability",
+    "Ensure project subdomain uses 'mhs-online-earn-platform' (no special characters like ★)",
+    "Registration backend must be fully functional with working 'Register' button in production",
+    "Admin panel at /admin-panel must display login screen and show complete user list after authentication"
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "/admin-panel route showing black screen in production - routing not properly configured for live domain"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-create-a-hero-section-on-the-home-page-displaying-total-users-count-always-active-status-text-and-two-call-to-action-buttons-labeled-start-from-now-and-help-support",
@@ -157,6 +162,62 @@
         "REQ-19"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-page-title-in-frontend-index-html-from-mhs-online-earn-platform-to-mhs-online-earn-platform-by-removing-the-star-character",
+      "title": "Update the page title in frontend/index.html from 'MHS★Online Earn Platform' to 'MHS Online Earn Platform' by removing the star character (★)",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-admin-panel-at-admin-panel-correctly-displays-the-user-management-table-showing-all-registered-users-with-their-profile-information-username-email-whatsapp-number-approval-status-after-successful-admin-login-using-the-usermanagementtable-component",
+      "title": "Ensure the admin panel at /admin-panel correctly displays the user management table showing all registered users with their profile information (username, email, WhatsApp number, approval status) after successful admin login using the UserManagementTable component",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-handleregister-function-in-frontend-src-pages-register-tsx-so-that-clicking-the-register-button-successfully-creates-the-user-account-and-displays-a-registration-successful-message-to-the-user",
+      "title": "Fix the handleRegister function in frontend/src/pages/Register.tsx so that clicking the Register button successfully creates the user account and displays a 'Registration Successful' message to the user",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-after-successful-user-registration-automatically-redirect-the-user-from-the-register-page-to-the-login-page",
+      "title": "After successful user registration, automatically redirect the user from the Register page to the /login page",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-admin-panel-route-configuration-to-resolve-the-black-screen-issue-in-production-deployment-at-mhs-online-earn-platform-caffeine-xyz",
+      "title": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment at mhs-online-earn-platform.caffeine.xyz",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-admin-login-functionality-works-correctly-at-admin-panel-using-the-credentials-admin-and-habibur123-and-successfully-redirects-to-the-admin-panel-dashboard-after-authentication",
+      "title": "Verify that the admin login functionality works correctly at /admin-panel using the credentials 'admin' and 'habibur123', and successfully redirects to the admin panel dashboard after authentication",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-admin-panel-route-is-accessible-on-the-live-production-domain-without-requiring-internet-identity-authentication",
+      "title": "Ensure the /admin-panel route is accessible on the live production domain without requiring Internet Identity authentication",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -238,6 +299,44 @@
       "id": "AR-20",
       "summary": "Replace old profile photo with user's uploaded photo as hero section or landing page background with dark overlay and fixed positioning",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Fix the registration backend in backend/main.mo to ensure user registration completes successfully and stores all user data (username, whatsappNumber, email, password hash, referralCode, approved status, and principal) in the stable users HashMap when the Register button is clicked",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Verify that the admin panel login page renders correctly at https://mhs-online-earn-platform.caffeine.xyz/admin-panel and displays the admin login form with username and password fields using the existing local authentication (admin/habibur123) without requiring Internet Identity",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Fix handleRegister function to complete user creation, show 'Registration Successful' message, and auto-redirect to /login page after registration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Ensure the user registration backend API in backend/main.mo is fully connected and operational, storing all user registration data (username, whatsappNumber, email, password hash, referralCode, approved status, principal) in the stable users HashMap when registration is submitted",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Verify and ensure all backend functions are properly configured to work with the live domain mhs-online-earn-platform.caffeine.xyz",
+      "reqIds": [
+        "REQ-27"
+      ],
       "status": "pending"
     }
   ],

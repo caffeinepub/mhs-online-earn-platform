@@ -1,57 +1,54 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T09:26:11.814Z",
+  "generatedAt": "2026-02-20T11:17:13.963Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-16",
-        "summary": "Remove the existing old-man picture (1770720033234.jpg) from the Home page hero section entirely",
+        "id": "REQ-28",
+        "summary": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment at mhs-online-earn-platform.caffeine.xyz",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/AdminLogin.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/AdminLogin.tsx"
         ]
       },
       {
-        "id": "REQ-17",
-        "summary": "Set the uploaded user photo (1770720033234-1.jpg) as the background image for the Hero Section on the Home page",
+        "id": "REQ-29",
+        "summary": "Verify that the admin login functionality works correctly at /admin-panel using the credentials 'admin' and 'habibur123', and successfully redirects to the admin panel dashboard after authentication",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/pages/AdminLogin.tsx",
+          "frontend/src/pages/AdminPanel.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/pages/AdminLogin.tsx",
+          "frontend/src/pages/AdminPanel.tsx"
         ]
       },
       {
-        "id": "REQ-18",
-        "summary": "Apply a dark transparent overlay (rgba(0, 0, 0, 0.5) or similar) on top of the background image to ensure white text remains clearly readable",
+        "id": "REQ-30",
+        "summary": "Ensure the /admin-panel route is accessible on the live production domain without requiring Internet Identity authentication",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/AdminLogin.tsx",
+          "frontend/src/pages/AdminPanel.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Home.tsx"
-        ]
-      },
-      {
-        "id": "REQ-19",
-        "summary": "Configure the background image with CSS background-attachment: fixed so it stays in place when scrolling the page",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Home.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Home.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/pages/AdminLogin.tsx",
+          "frontend/src/pages/AdminPanel.tsx"
         ]
       }
     ]
@@ -61,7 +58,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/pages/Home.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/pages/AdminLogin.tsx",
+    "frontend/src/pages/AdminPanel.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

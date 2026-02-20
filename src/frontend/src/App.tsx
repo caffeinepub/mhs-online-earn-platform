@@ -3,7 +3,6 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import AdminLogin from './pages/AdminLogin';
 import AdminPanel from './pages/AdminPanel';
 import JobTask from './pages/JobTask';
 import Withdraw from './pages/Withdraw';
@@ -12,6 +11,7 @@ import PaymentProof from './pages/PaymentProof';
 import Support from './pages/Support';
 import Header from './components/Header';
 import FloatingFacebookButton from './components/FloatingFacebookButton';
+import { Toaster } from '@/components/ui/sonner';
 
 // Layout component with header and floating Facebook button
 function Layout() {
@@ -20,6 +20,7 @@ function Layout() {
       <Header />
       <Outlet />
       <FloatingFacebookButton />
+      <Toaster />
     </div>
   );
 }
@@ -84,12 +85,6 @@ const supportRoute = createRoute({
   component: Support,
 });
 
-const adminLoginRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/admin-login',
-  component: AdminLogin,
-});
-
 const adminPanelRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin-panel',
@@ -107,7 +102,6 @@ const routeTree = rootRoute.addChildren([
   referEarnRoute,
   paymentProofRoute,
   supportRoute,
-  adminLoginRoute,
   adminPanelRoute,
 ]);
 

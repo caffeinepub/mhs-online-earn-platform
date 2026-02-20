@@ -1,68 +1,76 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace homepage background with user photo and apply dark overlay with fixed positioning",
+  "title": "Fix Admin Panel Black Screen Routing Issue in Production",
   "requirements": [
     {
-      "id": "REQ-16",
-      "summary": "Remove the existing old-man picture (1770720033234.jpg) from the Home page hero section entirely",
+      "id": "REQ-28",
+      "summary": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment",
       "acceptanceCriteria": [
-        "The circular user photo previously displayed below the 'MHS★Online Earn Platform' title is removed from the DOM",
-        "No references to 1770720033234.jpg remain in the Home page component"
+        "The /admin-panel route loads without a black screen on the live domain",
+        "The admin login form is visible and functional at https://mhs-online-earn-platform.caffeine.xyz/admin-panel",
+        "Users can successfully navigate to /admin-panel from the browser address bar",
+        "No console errors related to routing appear when accessing /admin-panel"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Home.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Remove the circular user profile image element that references 1770720033234.jpg from the hero section. Delete the img element and its container div that displays the user photo below the title."
+          "description": "Review and fix the route configuration for /admin-panel to ensure it properly renders the AdminLogin page component. Verify that the route is registered correctly in the TanStack Router configuration and that there are no path conflicts or missing route definitions causing the black screen. Ensure the route is accessible directly via URL navigation in production."
+        },
+        {
+          "path": "frontend/src/pages/AdminLogin.tsx",
+          "operation": "modify",
+          "description": "Review the AdminLogin component to ensure it renders correctly and doesn't have any runtime errors that could cause a black screen. Verify that the component exports are correct and that there are no missing dependencies or imports that would prevent rendering in production."
         }
       ]
     },
     {
-      "id": "REQ-17",
-      "summary": "Set the uploaded user photo (1770720033234-1.jpg) as the background image for the Hero Section on the Home page",
+      "id": "REQ-29",
+      "summary": "Verify admin login functionality at /admin-panel works with credentials 'admin' and 'habibur123' and redirects to dashboard after authentication",
       "acceptanceCriteria": [
-        "The uploaded photo 1770720033234-1.jpg is rendered as a background image covering the hero section",
-        "Background image uses CSS background-size: cover and background-position: center for proper display",
-        "The hero section maintains its existing layout with all text and buttons visible"
+        "The admin login form accepts username 'admin' and password 'habibur123'",
+        "Successful authentication redirects to the admin panel dashboard displaying the UserManagementTable and TaskManagementPanel components",
+        "Authentication state persists in localStorage",
+        "Invalid credentials display an appropriate error message"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Home.tsx",
+          "path": "frontend/src/pages/AdminLogin.tsx",
           "operation": "modify",
-          "description": "Apply inline styles or className to the hero section container to set background-image pointing to /assets/1770720033234-1.jpg, with background-size: cover and background-position: center. Ensure the hero section maintains its existing structure with all content visible."
+          "description": "Verify and test the local authentication logic using hardcoded credentials (admin/habibur123). Ensure the login form properly validates credentials, stores authentication state in localStorage with the correct key, and redirects to /admin-panel route after successful authentication. Add proper error handling and user feedback for invalid credentials."
+        },
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Verify that the AdminPanel dashboard properly checks for authentication state from localStorage before rendering. Ensure the component displays UserManagementTable and TaskManagementPanel after successful login. Add authentication guard logic to redirect unauthenticated users back to /admin-login if needed."
         }
       ]
     },
     {
-      "id": "REQ-18",
-      "summary": "Apply a dark transparent overlay (rgba(0, 0, 0, 0.5) or similar) on top of the background image to ensure white text remains clearly readable",
+      "id": "REQ-30",
+      "summary": "Ensure /admin-panel route is accessible on production without requiring Internet Identity authentication",
       "acceptanceCriteria": [
-        "A semi-transparent black overlay is applied between the background image and the hero section content",
-        "The 'MHS★Online Earn Platform' title text and all other white text elements have sufficient contrast for readability",
-        "The overlay does not obscure the background image completely but provides clear text legibility"
+        "The /admin-panel route loads using local authentication only (no Internet Identity required)",
+        "The route works correctly in both development and production environments",
+        "The AdminLogin page renders properly at /admin-panel before authentication",
+        "After successful login, the AdminPanel page displays with user and task management interfaces"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Home.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a dark overlay layer using a pseudo-element (::before) or an additional div with rgba(0, 0, 0, 0.5) background color positioned absolutely over the background image but behind the hero content. Ensure proper z-index layering so text remains on top and readable."
-        }
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "summary": "Configure the background image with CSS background-attachment: fixed so it stays in place when scrolling the page",
-      "acceptanceCriteria": [
-        "The background image uses background-attachment: fixed CSS property",
-        "When scrolling the page, the background image remains stationary while content scrolls over it",
-        "The fixed background effect works on desktop and tablet viewports (may fall back to scroll on mobile for performance)"
-      ],
-      "file_operations": [
+          "description": "Verify that the /admin-panel route configuration does not have any Internet Identity authentication requirements or guards that would prevent access. Ensure the route is publicly accessible for the AdminLogin page, and only the AdminPanel dashboard itself should check for local authentication state. Confirm the routing works in production by testing path resolution and component mounting."
+        },
         {
-          "path": "frontend/src/pages/Home.tsx",
+          "path": "frontend/src/pages/AdminLogin.tsx",
           "operation": "modify",
-          "description": "Add background-attachment: fixed to the hero section's background image styles. Consider using a media query to apply fixed attachment only on larger viewports (min-width: 768px) and fall back to scroll on mobile for performance."
+          "description": "Ensure the AdminLogin page does not trigger any Internet Identity flows or require II authentication. The page should be accessible without any authentication checks and should only use the local credential-based authentication system with hardcoded admin/habibur123 credentials."
+        },
+        {
+          "path": "frontend/src/pages/AdminPanel.tsx",
+          "operation": "modify",
+          "description": "Verify that the AdminPanel page only checks for local authentication state stored in localStorage and does not require or check for Internet Identity authentication. The component should use the local auth token to determine access, not the Internet Identity principal."
         }
       ]
     }

@@ -5,13 +5,15 @@ import List "mo:core/List";
 import Time "mo:core/Time";
 import Int "mo:core/Int";
 import Order "mo:core/Order";
+import Text "mo:core/Text";
 import Principal "mo:core/Principal";
-import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Runtime "mo:core/Runtime";
 
 actor {
   let accessControlState = AccessControl.initState();
+
   include MixinAuthorization(accessControlState);
 
   public type Task = {
@@ -25,13 +27,24 @@ actor {
   public type TaskStatus = { #open; #inProgress; #completed };
   public type TaskCompletion = { taskId : Nat; timestamp : Time.Time };
 
-  public type UserProfile = {
+  public type UserRegistration = {
+    username : Text;
+    whatsappNumber : Text;
+    email : Text;
+    passwordHash : Text;
+    referralCode : Text;
+    isApproved : Bool;
+    principal : ?Principal;
+  };
+
+  public type TasksMetadata = {
     username : Text;
     whatsappNumber : Text;
     groupNumber : Text;
     email : Text;
     passwordHash : Text;
     referralCode : Text;
+    principal : Text;
     isApproved : Bool;
     referrals : [Principal];
     tasks : [Task];
@@ -41,10 +54,11 @@ actor {
 
   var nextTaskId = 1;
 
-  let userProfiles = Map.empty<Principal, UserProfile>();
+  let tasksData = Map.empty<Principal, TasksMetadata>();
   let tasks = Map.empty<Nat, Task>();
   let taskHistory = Map.empty<Principal, List.List<(Nat, Time.Time)>>();
   let points = Map.empty<Principal, Int>();
+  let users = Map.empty<Text, UserRegistration>();
 
   public type TaskUpdate = {
     taskId : Nat;
@@ -59,70 +73,184 @@ actor {
   };
 
   // Required profile management functions
-  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+  public query ({ caller }) func getCallerUserProfile() : async ?TasksMetadata {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view profiles");
     };
-    userProfiles.get(caller);
+    tasksData.get(caller);
   };
 
-  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?TasksMetadata {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
-    userProfiles.get(user);
+    tasksData.get(user);
   };
 
-  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+  public shared ({ caller }) func saveCallerUserProfile(profile : TasksMetadata) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can save profiles");
     };
-    userProfiles.add(caller, profile);
+    tasksData.add(caller, profile);
+  };
+
+  // Admin-only: Get specific registration by ID
+  public query ({ caller }) func getRegistration(_id : Text) : async ?UserRegistration {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can view registrations");
+    };
+    users.get(_id);
+  };
+
+  // Admin-only: Get all registrations
+  public query ({ caller }) func getAllRegistrations() : async [UserRegistration] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can view all registrations");
+    };
+    users.values().toArray();
+  };
+
+  // Admin-only: Manually add user registration (for administrative purposes)
+  public shared ({ caller }) func addUserRegistration(
+    id : Text,
+    username : Text,
+    whatsappNumber : Text,
+    email : Text,
+    passwordHash : Text,
+    referralCode : Text,
+    approved : Bool,
+    principal : ?Principal,
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can add registrations");
+    };
+
+    if (users.containsKey(id)) {
+      Runtime.trap("Registration already exists");
+    };
+
+    let newUserRegistration : UserRegistration = {
+      username;
+      whatsappNumber;
+      email;
+      passwordHash;
+      referralCode;
+      isApproved = approved;
+      principal;
+    };
+
+    users.add(id, newUserRegistration);
+  };
+
+  // Helper function to check if username already exists
+  private func usernameExists(username : Text) : Bool {
+    users.values().any(func(reg) { reg.username == username });
+  };
+
+  // Helper function to check if email already exists
+  private func emailExists(email : Text) : Bool {
+    users.values().any(func(reg) { reg.email == email });
+  };
+
+  // Helper function to check if WhatsApp number already exists
+  private func whatsappExists(whatsapp : Text) : Bool {
+    users.values().any(func(reg) { reg.whatsappNumber == whatsapp });
   };
 
   // User registration - accessible to guests (anonymous principals)
-  public shared ({ caller }) func registerUser(profile : UserProfile) : async () {
-    // Only guests (non-registered users) can register
-    if (userProfiles.containsKey(caller)) {
-      Runtime.trap("User already exists");
+  // Users start as unapproved and do NOT get user role until approved by admin
+  public shared ({ caller }) func registerUser(profile : TasksMetadata) : async () {
+    // Check if user already exists
+    if (tasksData.containsKey(caller)) {
+      Runtime.trap("User already registered with this principal");
     };
-    // New users start as unapproved and get user role
+
+    // Check for duplicate username
+    if (usernameExists(profile.username)) {
+      Runtime.trap("Username already exists");
+    };
+
+    // Check for duplicate email
+    if (emailExists(profile.email)) {
+      Runtime.trap("Email already registered");
+    };
+
+    // Check for duplicate WhatsApp number
+    if (whatsappExists(profile.whatsappNumber)) {
+      Runtime.trap("WhatsApp number already registered");
+    };
+
+    // Prepare user registration ID from username
+    let registrationId = profile.username;
+
+    // Prepare user registration data
+    let newUserRegistration : UserRegistration = {
+      username = profile.username;
+      whatsappNumber = profile.whatsappNumber;
+      email = profile.email;
+      passwordHash = profile.passwordHash;
+      referralCode = profile.referralCode;
+      isApproved = false;
+      principal = ?caller;
+    };
+
+    // Store registration
+    users.add(registrationId, newUserRegistration);
+
+    // Prepare full profile (not approved yet)
     let newProfile = {
-      profile with isApproved = false;
+      profile with
+      isApproved = false;
+      principal = caller.toText();
     };
-    userProfiles.add(caller, newProfile);
-    // Assign user role after registration
-    AccessControl.assignRole(accessControlState, caller, caller, #user);
+
+    // Store user data
+    tasksData.add(caller, newProfile);
   };
 
   // Admin function to approve users
+  // This is where the user role gets assigned
   public shared ({ caller }) func approveUser(user : Principal) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can approve users");
     };
-    let userProfile = switch (userProfiles.get(user)) {
+
+    let userProfile = switch (tasksData.get(user)) {
       case (null) { Runtime.trap("User does not exist") };
       case (?profile) { profile };
     };
-    let approvedProfile = {
-      userProfile with isApproved = true;
+
+    // Update approval status in tasksData
+    let approvedProfile = { userProfile with isApproved = true };
+    tasksData.add(user, approvedProfile);
+
+    // Update approval status in users map
+    let registrationId = userProfile.username;
+    switch (users.get(registrationId)) {
+      case (?registration) {
+        let approvedRegistration = { registration with isApproved = true };
+        users.add(registrationId, approvedRegistration);
+      };
+      case (null) { /* Registration might not exist, continue */ };
     };
-    userProfiles.add(user, approvedProfile);
+
+    // Assign user role after approval
+    AccessControl.assignRole(accessControlState, caller, user, #user);
   };
 
   // Admin function to get all users
-  public query ({ caller }) func getAllUsers() : async [UserProfile] {
+  public query ({ caller }) func getAllUsers() : async [TasksMetadata] {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can view all users");
     };
-    userProfiles.values().toArray();
+    tasksData.values().toArray();
   };
 
   public query ({ caller }) func getTasksByRewardForCaller() : async [Task] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view tasks");
     };
-    let userProfile = switch (userProfiles.get(caller)) {
+    let userProfile = switch (tasksData.get(caller)) {
       case (?profile) { 
         if (not profile.isApproved) {
           Runtime.trap("Unauthorized: Account not approved");
@@ -198,7 +326,7 @@ actor {
     if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
       Runtime.trap("Unauthorized: Can only view your own tasks");
     };
-    switch (userProfiles.get(user)) {
+    switch (tasksData.get(user)) {
       case (null) { [] };
       case (?profile) { 
         if (not profile.isApproved and not AccessControl.isAdmin(accessControlState, caller)) {
@@ -214,7 +342,7 @@ actor {
       Runtime.trap("Unauthorized: Only users can complete tasks");
     };
 
-    let userProfile = switch (userProfiles.get(caller)) {
+    let userProfile = switch (tasksData.get(caller)) {
       case (null) { Runtime.trap("User does not exist") };
       case (?profile) { 
         if (not profile.isApproved) {
@@ -236,14 +364,14 @@ actor {
     let updatedTasks = userProfile.tasks.map(func(t) { if (t.id == taskId) { { t with status = #completed } } else { t } });
     let completionRecord : TaskCompletion = { taskId; timestamp = Time.now() };
 
-    let updatedProfile : UserProfile = {
+    let updatedProfile : TasksMetadata = {
       userProfile with
       tasks = updatedTasks;
       completedTasks = userProfile.completedTasks.concat([completionRecord]);
       totalEarnings = userProfile.totalEarnings + task.reward;
     };
 
-    userProfiles.add(caller, updatedProfile);
+    tasksData.add(caller, updatedProfile);
 
     let userPoints = switch (points.get(caller)) {
       case (null) { 0 };
@@ -320,21 +448,12 @@ actor {
     };
   };
 
-  // Legacy admin login - accessible to anyone (guests) for local authentication
-  // This allows admin panel access without Internet Identity
-  public shared ({ caller }) func legacyAdminLogin(username : Text, password : Text) : async Bool {
-    if (username == "admin" and password == "habibur123") {
-      true;
-    } else {
-      Runtime.trap("Invalid legacy admin credentials");
-    };
-  };
-
+  // Login function - requires user role (approved users only)
   public shared ({ caller }) func login(username : Text, password : Text) : async Bool {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: User not registered");
+      Runtime.trap("Unauthorized: User not registered or not approved");
     };
-    switch (userProfiles.get(caller)) {
+    switch (tasksData.get(caller)) {
       case (?profile) {
         if (not profile.isApproved) {
           Runtime.trap("Unauthorized: Account not approved");
@@ -353,7 +472,7 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: No active session");
     };
-    switch (userProfiles.get(caller)) {
+    switch (tasksData.get(caller)) {
       case (null) { Runtime.trap("No active session") };
       case (?_) { () };
     };
@@ -368,7 +487,7 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view referral count");
     };
-    switch (userProfiles.get(caller)) {
+    switch (tasksData.get(caller)) {
       case (null) { 0 };
       case (?profile) { profile.referrals.size() };
     };
@@ -378,7 +497,7 @@ actor {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view referral earnings");
     };
-    switch (userProfiles.get(caller)) {
+    switch (tasksData.get(caller)) {
       case (null) { 0 };
       case (?profile) { 
         // Calculate earnings based on referrals (example: 10 points per referral)
@@ -389,11 +508,6 @@ actor {
 
   // Internal helper function
   private func existsInternal(tasks : [TaskCompletion], taskId : Nat) : Bool {
-    tasks.any(func(completion) { completion.taskId == taskId });
-  };
-
-  // Public version for external calls - accessible to anyone
-  public query ({ caller }) func exists(tasks : [TaskCompletion], taskId : Nat) : async Bool {
     tasks.any(func(completion) { completion.taskId == taskId });
   };
 };

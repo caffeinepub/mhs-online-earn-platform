@@ -1,27 +1,27 @@
-import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useApproveUser } from '../hooks/useQueries';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import type { UserProfile } from '../backend';
 import { Principal } from '@dfinity/principal';
+import { toast } from 'sonner';
+import type { TasksMetadata } from '../backend';
 
 interface UserManagementTableProps {
-  users: UserProfile[];
+  users: TasksMetadata[];
   onRefresh: () => void;
 }
 
 export default function UserManagementTable({ users, onRefresh }: UserManagementTableProps) {
-  const approveUserMutation = useApproveUser();
+  const approveMutation = useApproveUser();
 
-  const handleApprove = async (userPrincipal: string) => {
+  const handleApprove = async (principalText: string) => {
     try {
-      const principal = Principal.fromText(userPrincipal);
-      await approveUserMutation.mutateAsync(principal);
-      toast.success('User approved successfully!');
+      const principal = Principal.fromText(principalText);
+      await approveMutation.mutateAsync(principal);
+      toast.success('User approved successfully');
       onRefresh();
     } catch (error: any) {
+      console.error('Approval error:', error);
       toast.error(error.message || 'Failed to approve user');
     }
   };
@@ -29,7 +29,7 @@ export default function UserManagementTable({ users, onRefresh }: UserManagement
   if (users.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        No users registered yet.
+        No users registered yet
       </div>
     );
   }
@@ -48,36 +48,28 @@ export default function UserManagementTable({ users, onRefresh }: UserManagement
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((user, index) => (
-            <TableRow key={index}>
+          {users.map((user) => (
+            <TableRow key={user.principal}>
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.whatsappNumber}</TableCell>
               <TableCell>{user.groupNumber}</TableCell>
               <TableCell>
                 {user.isApproved ? (
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    Approved
-                  </Badge>
+                  <Badge variant="default" className="bg-green-600">Approved</Badge>
                 ) : (
-                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                    Pending
-                  </Badge>
+                  <Badge variant="secondary">Pending</Badge>
                 )}
               </TableCell>
               <TableCell>
                 {!user.isApproved && (
                   <Button
                     size="sm"
-                    onClick={() => handleApprove(user.email)}
-                    disabled={approveUserMutation.isPending}
+                    onClick={() => handleApprove(user.principal)}
+                    disabled={approveMutation.isPending}
                     className="bg-[oklch(0.55_0.25_250)] hover:bg-[oklch(0.50_0.25_250)]"
                   >
-                    {approveUserMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      'Approve'
-                    )}
+                    {approveMutation.isPending ? 'Approving...' : 'Approve'}
                   </Button>
                 )}
               </TableCell>
