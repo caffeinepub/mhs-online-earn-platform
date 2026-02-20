@@ -1,0 +1,93 @@
+{
+  "kind": "build_request",
+  "title": "Replace homepage background with user photo and apply dark overlay with fixed positioning",
+  "projectName": "MHS★Online Earn Platform",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-16",
+      "text": "Remove the existing old-man picture (1770720033234.jpg) from the Home page hero section entirely",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Remove the old old-man picture completely"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The circular user photo previously displayed below the 'MHS★Online Earn Platform' title is removed from the DOM",
+        "No references to 1770720033234.jpg remain in the Home page component"
+      ]
+    },
+    {
+      "id": "REQ-17",
+      "text": "Set the uploaded user photo (1770720033234-1.jpg) as the background image for the Hero Section on the Home page",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Set my uploaded photo as the background for the Hero Section or the entire landing page"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The uploaded photo 1770720033234-1.jpg is rendered as a background image covering the hero section",
+        "Background image uses CSS background-size: cover and background-position: center for proper display",
+        "The hero section maintains its existing layout with all text and buttons visible"
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Apply a dark transparent overlay (rgba(0, 0, 0, 0.5) or similar) on top of the background image to ensure white text remains clearly readable",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Use a dark overlay (transparent black layer) over the image so that the white text ('MHS★Online Earn Platform') remains clearly readable"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A semi-transparent black overlay is applied between the background image and the hero section content",
+        "The 'MHS★Online Earn Platform' title text and all other white text elements have sufficient contrast for readability",
+        "The overlay does not obscure the background image completely but provides clear text legibility"
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "text": "Configure the background image with CSS background-attachment: fixed so it stays in place when scrolling the page",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "Make the image 'Fixed' so it stays in place when scrolling"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The background image uses background-attachment: fixed CSS property",
+        "When scrolling the page, the background image remains stationary while content scrolls over it",
+        "The fixed background effect works on desktop and tablet viewports (may fall back to scroll on mobile for performance)"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify the existing Header component or navigation structure",
+    "Preserve all existing hero section content including title text, user count, status text, and CTA buttons",
+    "Do not change the backend or any data models"
+  ],
+  "nonGoals": [
+    "Modifying the circular profile photo styling (that photo is being removed entirely)",
+    "Changing the color theme or existing blue/white styling beyond the background overlay",
+    "Adding new hero section content or features"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
