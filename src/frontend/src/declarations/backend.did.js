@@ -25,11 +25,21 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const AuthRequest = IDL.Record({
+  'username' : IDL.Text,
+  'password' : IDL.Text,
+});
+export const AuthResponse = IDL.Record({
+  'errorMessage' : IDL.Text,
+  'success' : IDL.Bool,
+});
 export const UserRegistration = IDL.Record({
   'isApproved' : IDL.Bool,
   'principal' : IDL.Opt(IDL.Principal),
   'referralCode' : IDL.Text,
+  'groupNumber' : IDL.Text,
   'username' : IDL.Text,
+  'balance' : IDL.Int,
   'email' : IDL.Text,
   'whatsappNumber' : IDL.Text,
   'passwordHash' : IDL.Text,
@@ -53,6 +63,15 @@ export const TasksMetadata = IDL.Record({
   'passwordHash' : IDL.Text,
   'totalEarnings' : IDL.Int,
 });
+export const WithdrawRequest = IDL.Record({
+  'id' : IDL.Nat,
+  'status' : IDL.Text,
+  'paymentMethod' : IDL.Text,
+  'submitTime' : Time,
+  'userPrincipal' : IDL.Principal,
+  'phoneNumber' : IDL.Text,
+  'amount' : IDL.Nat,
+});
 export const TaskUpdate = IDL.Record({
   'updatedTask' : Task,
   'updatedTitle' : IDL.Text,
@@ -61,9 +80,11 @@ export const TaskUpdate = IDL.Record({
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'addBalance' : IDL.Func([IDL.Text, IDL.Int], [], []),
   'addTask' : IDL.Func([Task], [], []),
   'addUserRegistration' : IDL.Func(
       [
+        IDL.Text,
         IDL.Text,
         IDL.Text,
         IDL.Text,
@@ -76,12 +97,20 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'approveUser' : IDL.Func([IDL.Text, IDL.Bool], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'authenticate' : IDL.Func([AuthRequest], [AuthResponse], ['query']),
   'completeTask' : IDL.Func([IDL.Nat], [], []),
   'deleteTask' : IDL.Func([IDL.Nat], [], []),
   'getAllRegistrations' : IDL.Func([], [IDL.Vec(UserRegistration)], ['query']),
   'getAllTasks' : IDL.Func([], [IDL.Vec(Task)], ['query']),
   'getAllUsers' : IDL.Func([], [IDL.Vec(TasksMetadata)], ['query']),
+  'getAllWithdrawRequests' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(WithdrawRequest)))],
+      ['query'],
+    ),
+  'getBalance' : IDL.Func([], [IDL.Int], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(TasksMetadata)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCompletedTasks' : IDL.Func(
@@ -116,6 +145,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(TasksMetadata)],
       ['query'],
     ),
+  'getUserWithdrawHistory' : IDL.Func(
+      [],
+      [IDL.Vec(WithdrawRequest)],
+      ['query'],
+    ),
   'getWeeklyTaskStats' : IDL.Func(
       [IDL.Principal],
       [IDL.Record({ 'completedTasks' : IDL.Nat, 'totalPoints' : IDL.Int })],
@@ -127,7 +161,17 @@ export const idlService = IDL.Service({
   'logout' : IDL.Func([], [], []),
   'registerUser' : IDL.Func([TasksMetadata], [], []),
   'saveCallerUserProfile' : IDL.Func([TasksMetadata], [], []),
+  'submitWithdrawRequest' : IDL.Func(
+      [IDL.Text, IDL.Nat, IDL.Text],
+      [WithdrawRequest],
+      [],
+    ),
   'updateTasks' : IDL.Func([IDL.Vec(TaskUpdate)], [], []),
+  'updateWithdrawRequestStatus' : IDL.Func(
+      [IDL.Principal, IDL.Nat, IDL.Text],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -150,11 +194,21 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const AuthRequest = IDL.Record({
+    'username' : IDL.Text,
+    'password' : IDL.Text,
+  });
+  const AuthResponse = IDL.Record({
+    'errorMessage' : IDL.Text,
+    'success' : IDL.Bool,
+  });
   const UserRegistration = IDL.Record({
     'isApproved' : IDL.Bool,
     'principal' : IDL.Opt(IDL.Principal),
     'referralCode' : IDL.Text,
+    'groupNumber' : IDL.Text,
     'username' : IDL.Text,
+    'balance' : IDL.Int,
     'email' : IDL.Text,
     'whatsappNumber' : IDL.Text,
     'passwordHash' : IDL.Text,
@@ -175,6 +229,15 @@ export const idlFactory = ({ IDL }) => {
     'passwordHash' : IDL.Text,
     'totalEarnings' : IDL.Int,
   });
+  const WithdrawRequest = IDL.Record({
+    'id' : IDL.Nat,
+    'status' : IDL.Text,
+    'paymentMethod' : IDL.Text,
+    'submitTime' : Time,
+    'userPrincipal' : IDL.Principal,
+    'phoneNumber' : IDL.Text,
+    'amount' : IDL.Nat,
+  });
   const TaskUpdate = IDL.Record({
     'updatedTask' : Task,
     'updatedTitle' : IDL.Text,
@@ -183,9 +246,11 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'addBalance' : IDL.Func([IDL.Text, IDL.Int], [], []),
     'addTask' : IDL.Func([Task], [], []),
     'addUserRegistration' : IDL.Func(
         [
+          IDL.Text,
           IDL.Text,
           IDL.Text,
           IDL.Text,
@@ -198,7 +263,9 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'approveUser' : IDL.Func([IDL.Text, IDL.Bool], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'authenticate' : IDL.Func([AuthRequest], [AuthResponse], ['query']),
     'completeTask' : IDL.Func([IDL.Nat], [], []),
     'deleteTask' : IDL.Func([IDL.Nat], [], []),
     'getAllRegistrations' : IDL.Func(
@@ -208,6 +275,12 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getAllTasks' : IDL.Func([], [IDL.Vec(Task)], ['query']),
     'getAllUsers' : IDL.Func([], [IDL.Vec(TasksMetadata)], ['query']),
+    'getAllWithdrawRequests' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Vec(WithdrawRequest)))],
+        ['query'],
+      ),
+    'getBalance' : IDL.Func([], [IDL.Int], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(TasksMetadata)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCompletedTasks' : IDL.Func(
@@ -242,6 +315,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(TasksMetadata)],
         ['query'],
       ),
+    'getUserWithdrawHistory' : IDL.Func(
+        [],
+        [IDL.Vec(WithdrawRequest)],
+        ['query'],
+      ),
     'getWeeklyTaskStats' : IDL.Func(
         [IDL.Principal],
         [IDL.Record({ 'completedTasks' : IDL.Nat, 'totalPoints' : IDL.Int })],
@@ -253,7 +331,17 @@ export const idlFactory = ({ IDL }) => {
     'logout' : IDL.Func([], [], []),
     'registerUser' : IDL.Func([TasksMetadata], [], []),
     'saveCallerUserProfile' : IDL.Func([TasksMetadata], [], []),
+    'submitWithdrawRequest' : IDL.Func(
+        [IDL.Text, IDL.Nat, IDL.Text],
+        [WithdrawRequest],
+        [],
+      ),
     'updateTasks' : IDL.Func([IDL.Vec(TaskUpdate)], [], []),
+    'updateWithdrawRequestStatus' : IDL.Func(
+        [IDL.Principal, IDL.Nat, IDL.Text],
+        [],
+        [],
+      ),
   });
 };
 

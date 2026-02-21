@@ -1,59 +1,64 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T11:27:31.362Z",
+  "generatedAt": "2026-02-21T05:28:25.471Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 4,
+    "implemented": 0,
     "items": [
       {
-        "id": "REQ-31",
-        "summary": "Modify the user registration backend in backend/main.mo to set the user's approval status to 'Approved' by default when creating a new user account, eliminating the need for manual admin approval",
+        "id": "REQ-1",
+        "summary": "Verify and fix the routing configuration for /mhs-admin-panel in App.tsx to ensure MhsAdminPanel component renders correctly without errors",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/pages/MhsAdminPanel.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Review and resolve any TypeScript compilation errors or runtime errors that could prevent successful deployment",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/MhsAdminPanel.tsx",
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/hooks/useActor.ts",
+          "frontend/src/main.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Ensure the backend canister builds successfully and all Motoko code compiles without errors",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-32",
-        "summary": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
-        "status": "implemented",
+        "id": "REQ-4",
+        "summary": "Perform a clean deployment of Version 20 to production ensuring all build artifacts are regenerated and deployed successfully",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/pages/Register.tsx"
+          "frontend/src/App.tsx",
+          "frontend/index.html",
+          "frontend/src/hooks/useActor.ts"
         ],
-        "matchedFiles": [
-          "frontend/src/pages/Register.tsx"
-        ]
-      },
-      {
-        "id": "REQ-33",
-        "summary": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Register.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Register.tsx"
-        ]
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/UserManagementTable.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Register.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,377 +1,48 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 17,
-  "summary": "Professional earning platform 'MHS Online Earn Platform' (formerly 'MHS★Online Earn Platform') with user registration, daily task system (10+ tasks), referral tracking with unique links, secure admin panel for user/task management, navigation menu (Home, Job Task, Withdraw, Refer & Earn, Payment Proof, Support), Facebook integration for support, dedicated Job Task page with timer functionality, and mobile-optimized hamburger menu. Registration backend fully functional with live registration recording.",
-  "architectural_notes": [
-    "Use simple local authentication for admin panel - no Internet Identity or external redirects",
-    "Mobile-first responsive design approach",
-    "Blue and white color theme throughout the platform",
-    "Implement hamburger menu for mobile navigation",
-    "Replace WhatsApp integration with Facebook profile link throughout",
-    "Add timer functionality (10 seconds) for job task completion",
-    "Use uploaded user photo as fixed background for hero section with dark overlay for text readability",
-    "Ensure project subdomain uses 'mhs-online-earn-platform' (no special characters like ★)",
-    "Registration backend must be fully functional with working 'Register' button in production",
-    "Admin panel at /admin-panel must display login screen and show complete user list after authentication"
-  ],
+  "projectStateVersion": 3,
+  "summary": "New project",
+  "architectural_notes": [],
   "known_issues": [
-    "/admin-panel route showing black screen in production - routing not properly configured for live domain"
+    "Admin Panel deployment errors at /mhs-admin-panel route"
   ],
-  "isFixRequest": false,
-  "existing_features": [
-    {
-      "id": "feature-create-a-hero-section-on-the-home-page-displaying-total-users-count-always-active-status-text-and-two-call-to-action-buttons-labeled-start-from-now-and-help-support",
-      "title": "Create a hero section on the home page displaying 'Total Users' count, 'Always Active' status text, and two call-to-action buttons labeled 'Start from now' and 'Help & Support'",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-user-registration-form-with-fields-for-username-whatsapp-number-group-number-email-password-and-an-optional-referral-code-field",
-      "title": "Implement user registration form with fields for Username, WhatsApp Number, Group Number, Email, Password, and an optional Referral Code field",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-user-dashboard-displaying-a-section-titled-10-daily-tasks-with-tasks-labeled-job-1-through-job-10",
-      "title": "Create user dashboard displaying a section titled '10+ Daily Tasks' with tasks labeled Job 1 through Job 10",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-referral-system-that-generates-a-unique-referral-link-for-each-registered-user-and-displays-their-referral-count-and-total-referral-earnings",
-      "title": "Implement referral system that generates a unique referral link for each registered user and displays their referral count and total referral earnings",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-admin-panel-at-route-admin-panel-with-local-authentication-using-username-admin-and-password-habibur123-that-allows-viewing-all-users-approving-pending-accounts-and-managing-tasks",
-      "title": "Create admin panel at route /admin-panel with local authentication using username 'admin' and password 'habibur123' that allows viewing all users, approving pending accounts, and managing tasks",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-blue-and-white-color-theme-throughout-the-application-with-100-mobile-responsive-layout-and-a-floating-whatsapp-contact-button",
-      "title": "Implement blue and white color theme throughout the application with 100% mobile-responsive layout and a floating WhatsApp contact button",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-user-authentication-system-with-login-functionality-that-allows-approved-users-to-access-their-dashboard",
-      "title": "Implement user authentication system with login functionality that allows approved users to access their dashboard",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-professional-navigation-menu-in-the-application-header-with-the-following-items-home-job-task-withdraw-refer-earn-payment-proof-support-each-menu-item-should-navigate-to-its-respective-page-route",
-      "title": "Add a professional navigation menu in the application header with the following items: Home, Job Task, Withdraw, Refer & Earn, Payment Proof, Support. Each menu item should navigate to its respective page/route.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-hamburger-style-navigation-menu-for-mobile-devices-the-menu-should-collapse-into-a-hamburger-icon-on-smaller-screens-and-expand-when-clicked-maintaining-clean-mobile-responsive-design",
-      "title": "Implement hamburger-style navigation menu for mobile devices. The menu should collapse into a hamburger icon on smaller screens and expand when clicked, maintaining clean mobile-responsive design.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-replace-the-floating-whatsapp-button-and-all-support-related-links-throughout-the-application-with-a-facebook-icon-linking-to-https-www-facebook-com-md-habibur-rahman-62356-the-facebook-link-should-open-in-a-new-tab",
-      "title": "Replace the floating WhatsApp button and all support-related links throughout the application with a Facebook icon linking to https://www.facebook.com/md.habibur.rahman.62356. The Facebook link should open in a new tab.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-dedicated-job-task-page-accessible-via-the-navigation-menu-this-page-should-display-10-interactive-cards-or-buttons-labeled-job-1-through-job-10-when-a-user-clicks-any-job-card-start-a-10-second-countdown-timer-and-display-a-task-complete-message-when-the-timer-finishes",
-      "title": "Create a dedicated 'Job Task' page accessible via the navigation menu. This page should display 10 interactive cards or buttons labeled 'Job 1' through 'Job 10'. When a user clicks any job card, start a 10-second countdown timer and display a 'Task Complete' message when the timer finishes.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-refer-earn-navigation-menu-item-leads-to-a-dedicated-page-that-displays-the-user-s-unique-referral-link-and-their-total-referral-count-this-page-should-be-easily-accessible-from-the-main-navigation",
-      "title": "Ensure the 'Refer & Earn' navigation menu item leads to a dedicated page that displays the user's unique referral link and their total referral count. This page should be easily accessible from the main navigation.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-verify-that-the-admin-panel-route-remains-accessible-using-local-authentication-with-username-admin-and-password-habibur123-without-requiring-internet-identity-authentication-admin-users-should-be-able-to-log-in-directly-using-these-credentials",
-      "title": "Verify that the /admin-panel route remains accessible using local authentication with username 'admin' and password 'habibur123' without requiring Internet Identity authentication. Admin users should be able to log in directly using these credentials.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-the-uploaded-user-photo-1770720033234-jpg-to-the-home-page-hero-section-positioned-directly-below-the-mhs-online-earn-platform-title-apply-circular-styling-to-the-image-and-optimize-dimensions-for-mobile-display-recommend-120x120px-to-150x150px",
-      "title": "Add the uploaded user photo (1770720033234.jpg) to the Home Page hero section, positioned directly below the 'MHS★Online Earn Platform' title. Apply circular styling to the image and optimize dimensions for mobile display (recommend 120x120px to 150x150px).",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-existing-old-man-picture-1770720033234-jpg-from-the-home-page-hero-section-entirely",
-      "title": "Remove the existing old-man picture (1770720033234.jpg) from the Home page hero section entirely",
-      "reqIds": [
-        "REQ-16"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-set-the-uploaded-user-photo-1770720033234-1-jpg-as-the-background-image-for-the-hero-section-on-the-home-page",
-      "title": "Set the uploaded user photo (1770720033234-1.jpg) as the background image for the Hero Section on the Home page",
-      "reqIds": [
-        "REQ-17"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-apply-a-dark-transparent-overlay-rgba-0-0-0-0-5-or-similar-on-top-of-the-background-image-to-ensure-white-text-remains-clearly-readable",
-      "title": "Apply a dark transparent overlay (rgba(0, 0, 0, 0.5) or similar) on top of the background image to ensure white text remains clearly readable",
-      "reqIds": [
-        "REQ-18"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-configure-the-background-image-with-css-background-attachment-fixed-so-it-stays-in-place-when-scrolling-the-page",
-      "title": "Configure the background image with CSS background-attachment: fixed so it stays in place when scrolling the page",
-      "reqIds": [
-        "REQ-19"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-page-title-in-frontend-index-html-from-mhs-online-earn-platform-to-mhs-online-earn-platform-by-removing-the-star-character",
-      "title": "Update the page title in frontend/index.html from 'MHS★Online Earn Platform' to 'MHS Online Earn Platform' by removing the star character (★)",
-      "reqIds": [
-        "REQ-20"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-admin-panel-at-admin-panel-correctly-displays-the-user-management-table-showing-all-registered-users-with-their-profile-information-username-email-whatsapp-number-approval-status-after-successful-admin-login-using-the-usermanagementtable-component",
-      "title": "Ensure the admin panel at /admin-panel correctly displays the user management table showing all registered users with their profile information (username, email, WhatsApp number, approval status) after successful admin login using the UserManagementTable component",
-      "reqIds": [
-        "REQ-23"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-handleregister-function-in-frontend-src-pages-register-tsx-so-that-clicking-the-register-button-successfully-creates-the-user-account-and-displays-a-registration-successful-message-to-the-user",
-      "title": "Fix the handleRegister function in frontend/src/pages/Register.tsx so that clicking the Register button successfully creates the user account and displays a 'Registration Successful' message to the user",
-      "reqIds": [
-        "REQ-25"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-after-successful-user-registration-automatically-redirect-the-user-from-the-register-page-to-the-login-page",
-      "title": "After successful user registration, automatically redirect the user from the Register page to the /login page",
-      "reqIds": [
-        "REQ-26"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-fix-the-admin-panel-route-configuration-to-resolve-the-black-screen-issue-in-production-deployment-at-mhs-online-earn-platform-caffeine-xyz",
-      "title": "Fix the /admin-panel route configuration to resolve the black screen issue in production deployment at mhs-online-earn-platform.caffeine.xyz",
-      "reqIds": [
-        "REQ-28"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-verify-that-the-admin-login-functionality-works-correctly-at-admin-panel-using-the-credentials-admin-and-habibur123-and-successfully-redirects-to-the-admin-panel-dashboard-after-authentication",
-      "title": "Verify that the admin login functionality works correctly at /admin-panel using the credentials 'admin' and 'habibur123', and successfully redirects to the admin panel dashboard after authentication",
-      "reqIds": [
-        "REQ-29"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-admin-panel-route-is-accessible-on-the-live-production-domain-without-requiring-internet-identity-authentication",
-      "title": "Ensure the /admin-panel route is accessible on the live production domain without requiring Internet Identity authentication",
-      "reqIds": [
-        "REQ-30"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-registration-success-message-in-frontend-src-pages-register-tsx-to-display-registration-successful-you-can-now-log-in-instead-of-any-pending-approval-message",
-      "title": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
-      "reqIds": [
-        "REQ-32"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-registration-flow-in-frontend-src-pages-register-tsx-automatically-redirects-users-to-the-login-page-immediately-after-successful-registration",
-      "title": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
-      "reqIds": [
-        "REQ-33"
-      ],
-      "version": 1
-    }
-  ],
+  "isFixRequest": true,
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Hero section with Total Users count, Always Active text, Start from now and Help & Support buttons",
-      "reqIds": [],
+      "summary": "Verify and fix the routing configuration for /mhs-admin-panel in App.tsx to ensure MhsAdminPanel component renders correctly without errors",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "User registration form with Username, WhatsApp Number, Group Number, Email, Password, and Referral Code fields",
-      "reqIds": [],
+      "summary": "Review and resolve any TypeScript compilation errors or runtime errors that could prevent successful deployment",
+      "reqIds": [
+        "REQ-2"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "User dashboard with 10+ Daily Tasks section (Job 1 to Job 10)",
-      "reqIds": [],
+      "summary": "Ensure the backend canister builds successfully and all Motoko code compiles without errors",
+      "reqIds": [
+        "REQ-3"
+      ],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Referral system with unique referral link generation, referral count display, and earnings tracking",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-5",
-      "summary": "Admin panel at /admin-panel with local login (username: admin, password: habibur123) for viewing users, approving accounts, and managing tasks",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Blue and white theme design with 100% mobile-responsive layout and floating WhatsApp button",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-13",
-      "summary": "Implement backend data models and storage for User accounts (with username, WhatsApp number, group number, email, password hash, referral code, approval status), Tasks (with job details and status), and Referral tracking (linking referrer to referred users)",
+      "summary": "Perform a clean deployment of Version 20 to production ensuring all build artifacts are regenerated and deployed successfully",
       "reqIds": [
-        "REQ-7"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-14",
-      "summary": "Add professional navigation menu in header with items: Home, Job Task, Withdraw, Refer & Earn, Payment Proof, Support",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-15",
-      "summary": "Replace WhatsApp button/support links with Facebook Profile link using Facebook icon (https://www.facebook.com/md.habibur.rahman.62356)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-16",
-      "summary": "Create dedicated Job Task page with 10 cards/buttons (Job 1-10), 10-second timer on click, and 'Task Complete' message",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-17",
-      "summary": "Ensure Refer & Earn menu navigates to page displaying user's unique referral link and total referral count",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-18",
-      "summary": "Implement hamburger-style navigation menu for mobile with clean responsive design",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-20",
-      "summary": "Replace old profile photo with user's uploaded photo as hero section or landing page background with dark overlay and fixed positioning",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-22",
-      "summary": "Fix the registration backend in backend/main.mo to ensure user registration completes successfully and stores all user data (username, whatsappNumber, email, password hash, referralCode, approved status, and principal) in the stable users HashMap when the Register button is clicked",
-      "reqIds": [
-        "REQ-21"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-23",
-      "summary": "Verify that the admin panel login page renders correctly at https://mhs-online-earn-platform.caffeine.xyz/admin-panel and displays the admin login form with username and password fields using the existing local authentication (admin/habibur123) without requiring Internet Identity",
-      "reqIds": [
-        "REQ-22"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-24",
-      "summary": "Fix handleRegister function to complete user creation, show 'Registration Successful' message, and auto-redirect to /login page after registration",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-25",
-      "summary": "Ensure the user registration backend API in backend/main.mo is fully connected and operational, storing all user registration data (username, whatsappNumber, email, password hash, referralCode, approved status, principal) in the stable users HashMap when registration is submitted",
-      "reqIds": [
-        "REQ-24"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-28",
-      "summary": "Verify and ensure all backend functions are properly configured to work with the live domain mhs-online-earn-platform.caffeine.xyz",
-      "reqIds": [
-        "REQ-27"
-      ],
-      "status": "pending"
-    },
-    {
-      "id": "AR-29",
-      "summary": "Set user registration status to 'Approved' by default (no manual admin approval needed), update registration success message to 'Registration Successful! You can now log in', and ensure auto-redirect to /login page",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-30",
-      "summary": "Modify the user registration backend in backend/main.mo to set the user's approval status to 'Approved' by default when creating a new user account, eliminating the need for manual admin approval",
-      "reqIds": [
-        "REQ-31"
+        "REQ-4"
       ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "MHS★Online Earn Platform",
+  "projectName": "MHS Online Earn",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

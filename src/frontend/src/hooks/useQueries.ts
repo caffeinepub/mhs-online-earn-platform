@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { Principal } from '@dfinity/principal';
-import type { TasksMetadata, Task } from '../backend';
+import type { TasksMetadata, Task, AuthRequest, AuthResponse, WithdrawRequest } from '../backend';
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
@@ -39,6 +39,25 @@ export function useSaveCallerUserProfile() {
   });
 }
 
+// Authentication
+export function useAuthenticate() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (credentials: AuthRequest) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.authenticate(credentials);
+    },
+    onSuccess: (response: AuthResponse) => {
+      if (response.success) {
+        // Invalidate user profile queries on successful authentication
+        queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      }
+    },
+  });
+}
+
 // Registration
 export function useRegisterUser() {
   const { actor } = useActor();
@@ -50,6 +69,37 @@ export function useRegisterUser() {
       return actor.registerUser(profile);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+    },
+  });
+}
+
+// Balance Query
+export function useGetBalance() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<bigint>({
+    queryKey: ['balance'],
+    queryFn: async () => {
+      if (!actor) return BigInt(0);
+      return actor.getBalance();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// Balance Mutation (Admin)
+export function useAddBalance() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ username, amount }: { username: string; amount: bigint }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.addBalance(username, amount);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['balance'] });
       queryClient.invalidateQueries({ queryKey: ['allUsers'] });
     },
   });
@@ -95,6 +145,7 @@ export function useCompleteTask() {
       queryClient.invalidateQueries({ queryKey: ['dailyTasks'] });
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
       queryClient.invalidateQueries({ queryKey: ['taskStats'] });
+      queryClient.invalidateQueries({ queryKey: ['balance'] });
     },
   });
 }
@@ -180,6 +231,44 @@ export function useIsCallerAdmin() {
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// Withdraw Requests
+export function useSubmitWithdrawRequest() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      phoneNumber,
+      amount,
+      paymentMethod,
+    }: {
+      phoneNumber: string;
+      amount: bigint;
+      paymentMethod: string;
+    }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.submitWithdrawRequest(phoneNumber, amount, paymentMethod);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userWithdrawHistory'] });
+      queryClient.invalidateQueries({ queryKey: ['balance'] });
+    },
+  });
+}
+
+export function useGetUserWithdrawHistory() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<WithdrawRequest[]>({
+    queryKey: ['userWithdrawHistory'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getUserWithdrawHistory();
     },
     enabled: !!actor && !isFetching,
   });

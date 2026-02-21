@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Auto-approve new user registrations and streamline the post-registration flow.
+**Goal:** Fix deployment errors and successfully redeploy Version 20 to production.
 
 **Planned changes:**
-- Set new user accounts to 'Approved' status by default in the backend
-- Update registration success message to "Registration Successful! You can now log in"
-- Auto-redirect users to the login page after successful registration
+- Fix routing configuration for /mhs-admin-panel in App.tsx to resolve component rendering errors
+- Resolve all TypeScript compilation errors and runtime errors
+- Fix backend Motoko code compilation issues
+- Perform a clean deployment of Version 20
 
-**User-visible outcome:** Users can register and immediately log in without waiting for admin approval, with clear messaging and automatic redirection to the login page.
+**User-visible outcome:** The application is live in production with a working admin panel at /mhs-admin-panel, free of deployment and runtime errors.

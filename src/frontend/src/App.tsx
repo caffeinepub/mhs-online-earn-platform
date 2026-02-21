@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminPanel from './pages/AdminPanel';
+import MhsAdminPanel from './pages/MhsAdminPanel';
 import JobTask from './pages/JobTask';
 import Withdraw from './pages/Withdraw';
 import ReferAndEarn from './pages/ReferAndEarn';
@@ -91,6 +92,12 @@ const adminPanelRoute = createRoute({
   component: AdminPanel,
 });
 
+const mhsAdminPanelRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/mhs-admin-panel',
+  component: MhsAdminPanel,
+});
+
 // Create route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -103,10 +110,14 @@ const routeTree = rootRoute.addChildren([
   paymentProofRoute,
   supportRoute,
   adminPanelRoute,
+  mhsAdminPanelRoute,
 ]);
 
-// Create router
-const router = createRouter({ routeTree });
+// Create router with proper configuration
+const router = createRouter({ 
+  routeTree,
+  defaultPreload: 'intent',
+});
 
 // Declare router type
 declare module '@tanstack/react-router' {

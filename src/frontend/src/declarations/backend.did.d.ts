@@ -10,6 +10,8 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface AuthRequest { 'username' : string, 'password' : string }
+export interface AuthResponse { 'errorMessage' : string, 'success' : boolean }
 export interface Task {
   'id' : bigint,
   'status' : TaskStatus,
@@ -45,7 +47,9 @@ export interface UserRegistration {
   'isApproved' : boolean,
   'principal' : [] | [Principal],
   'referralCode' : string,
+  'groupNumber' : string,
   'username' : string,
+  'balance' : bigint,
   'email' : string,
   'whatsappNumber' : string,
   'passwordHash' : string,
@@ -53,19 +57,46 @@ export interface UserRegistration {
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface WithdrawRequest {
+  'id' : bigint,
+  'status' : string,
+  'paymentMethod' : string,
+  'submitTime' : Time,
+  'userPrincipal' : Principal,
+  'phoneNumber' : string,
+  'amount' : bigint,
+}
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'addBalance' : ActorMethod<[string, bigint], undefined>,
   'addTask' : ActorMethod<[Task], undefined>,
   'addUserRegistration' : ActorMethod<
-    [string, string, string, string, string, string, boolean, [] | [Principal]],
+    [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      boolean,
+      [] | [Principal],
+    ],
     undefined
   >,
+  'approveUser' : ActorMethod<[string, boolean], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'authenticate' : ActorMethod<[AuthRequest], AuthResponse>,
   'completeTask' : ActorMethod<[bigint], undefined>,
   'deleteTask' : ActorMethod<[bigint], undefined>,
   'getAllRegistrations' : ActorMethod<[], Array<UserRegistration>>,
   'getAllTasks' : ActorMethod<[], Array<Task>>,
   'getAllUsers' : ActorMethod<[], Array<TasksMetadata>>,
+  'getAllWithdrawRequests' : ActorMethod<
+    [],
+    Array<[Principal, Array<WithdrawRequest>]>
+  >,
+  'getBalance' : ActorMethod<[], bigint>,
   'getCallerUserProfile' : ActorMethod<[], [] | [TasksMetadata]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCompletedTasks' : ActorMethod<[Principal], Array<bigint>>,
@@ -81,6 +112,7 @@ export interface _SERVICE {
   'getTasksByRewardForCaller' : ActorMethod<[], Array<Task>>,
   'getUserPoints' : ActorMethod<[Principal], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [TasksMetadata]>,
+  'getUserWithdrawHistory' : ActorMethod<[], Array<WithdrawRequest>>,
   'getWeeklyTaskStats' : ActorMethod<
     [Principal],
     { 'completedTasks' : bigint, 'totalPoints' : bigint }
@@ -91,7 +123,15 @@ export interface _SERVICE {
   'logout' : ActorMethod<[], undefined>,
   'registerUser' : ActorMethod<[TasksMetadata], undefined>,
   'saveCallerUserProfile' : ActorMethod<[TasksMetadata], undefined>,
+  'submitWithdrawRequest' : ActorMethod<
+    [string, bigint, string],
+    WithdrawRequest
+  >,
   'updateTasks' : ActorMethod<[Array<TaskUpdate>], undefined>,
+  'updateWithdrawRequestStatus' : ActorMethod<
+    [Principal, bigint, string],
+    undefined
+  >,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

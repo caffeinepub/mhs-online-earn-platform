@@ -108,16 +108,22 @@ export interface TaskUpdate {
     updatedTitle: string;
     taskId: bigint;
 }
-export type Time = bigint;
+export interface AuthRequest {
+    username: string;
+    password: string;
+}
 export interface UserRegistration {
     isApproved: boolean;
     principal?: Principal;
     referralCode: string;
+    groupNumber: string;
     username: string;
+    balance: bigint;
     email: string;
     whatsappNumber: string;
     passwordHash: string;
 }
+export type Time = bigint;
 export interface TaskCompletion {
     taskId: bigint;
     timestamp: Time;
@@ -128,6 +134,19 @@ export interface Task {
     reward: bigint;
     title: string;
     description: string;
+}
+export interface WithdrawRequest {
+    id: bigint;
+    status: string;
+    paymentMethod: string;
+    submitTime: Time;
+    userPrincipal: Principal;
+    phoneNumber: string;
+    amount: bigint;
+}
+export interface AuthResponse {
+    errorMessage: string;
+    success: boolean;
 }
 export enum TaskStatus {
     open = "open",
@@ -141,14 +160,19 @@ export enum UserRole {
 }
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    addBalance(username: string, amount: bigint): Promise<void>;
     addTask(task: Task): Promise<void>;
-    addUserRegistration(id: string, username: string, whatsappNumber: string, email: string, passwordHash: string, referralCode: string, approved: boolean, principal: Principal | null): Promise<void>;
+    addUserRegistration(id: string, username: string, whatsappNumber: string, groupNumber: string, email: string, passwordHash: string, referralCode: string, approved: boolean, principal: Principal | null): Promise<void>;
+    approveUser(username: string, approved: boolean): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    authenticate(credentials: AuthRequest): Promise<AuthResponse>;
     completeTask(taskId: bigint): Promise<void>;
     deleteTask(taskId: bigint): Promise<void>;
     getAllRegistrations(): Promise<Array<UserRegistration>>;
     getAllTasks(): Promise<Array<Task>>;
     getAllUsers(): Promise<Array<TasksMetadata>>;
+    getAllWithdrawRequests(): Promise<Array<[Principal, Array<WithdrawRequest>]>>;
+    getBalance(): Promise<bigint>;
     getCallerUserProfile(): Promise<TasksMetadata | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCompletedTasks(user: Principal): Promise<Array<bigint>>;
@@ -165,6 +189,7 @@ export interface backendInterface {
     getTasksByRewardForCaller(): Promise<Array<Task>>;
     getUserPoints(user: Principal): Promise<bigint>;
     getUserProfile(user: Principal): Promise<TasksMetadata | null>;
+    getUserWithdrawHistory(): Promise<Array<WithdrawRequest>>;
     getWeeklyTaskStats(user: Principal): Promise<{
         completedTasks: bigint;
         totalPoints: bigint;
@@ -175,7 +200,9 @@ export interface backendInterface {
     logout(): Promise<void>;
     registerUser(profile: TasksMetadata): Promise<void>;
     saveCallerUserProfile(profile: TasksMetadata): Promise<void>;
+    submitWithdrawRequest(phoneNumber: string, amount: bigint, paymentMethod: string): Promise<WithdrawRequest>;
     updateTasks(taskUpdates: Array<TaskUpdate>): Promise<void>;
+    updateWithdrawRequestStatus(userPrincipal: Principal, requestId: bigint, newStatus: string): Promise<void>;
 }
 import type { Task as _Task, TaskCompletion as _TaskCompletion, TaskStatus as _TaskStatus, TaskUpdate as _TaskUpdate, TasksMetadata as _TasksMetadata, UserRegistration as _UserRegistration, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -194,6 +221,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async addBalance(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addBalance(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addBalance(arg0, arg1);
+            return result;
+        }
+    }
     async addTask(arg0: Task): Promise<void> {
         if (this.processError) {
             try {
@@ -208,17 +249,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addUserRegistration(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: boolean, arg7: Principal | null): Promise<void> {
+    async addUserRegistration(arg0: string, arg1: string, arg2: string, arg3: string, arg4: string, arg5: string, arg6: string, arg7: boolean, arg8: Principal | null): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addUserRegistration(arg0, arg1, arg2, arg3, arg4, arg5, arg6, to_candid_opt_n5(this._uploadFile, this._downloadFile, arg7));
+                const result = await this.actor.addUserRegistration(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, to_candid_opt_n5(this._uploadFile, this._downloadFile, arg8));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addUserRegistration(arg0, arg1, arg2, arg3, arg4, arg5, arg6, to_candid_opt_n5(this._uploadFile, this._downloadFile, arg7));
+            const result = await this.actor.addUserRegistration(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, to_candid_opt_n5(this._uploadFile, this._downloadFile, arg8));
+            return result;
+        }
+    }
+    async approveUser(arg0: string, arg1: boolean): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.approveUser(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.approveUser(arg0, arg1);
             return result;
         }
     }
@@ -233,6 +288,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n6(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async authenticate(arg0: AuthRequest): Promise<AuthResponse> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.authenticate(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.authenticate(arg0);
             return result;
         }
     }
@@ -304,6 +373,34 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getAllUsers();
             return from_candid_vec_n17(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getAllWithdrawRequests(): Promise<Array<[Principal, Array<WithdrawRequest>]>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getAllWithdrawRequests();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getAllWithdrawRequests();
+            return result;
+        }
+    }
+    async getBalance(): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBalance();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBalance();
+            return result;
         }
     }
     async getCallerUserProfile(): Promise<TasksMetadata | null> {
@@ -478,6 +575,20 @@ export class Backend implements backendInterface {
             return from_candid_opt_n20(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getUserWithdrawHistory(): Promise<Array<WithdrawRequest>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserWithdrawHistory();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserWithdrawHistory();
+            return result;
+        }
+    }
     async getWeeklyTaskStats(arg0: Principal): Promise<{
         completedTasks: bigint;
         totalPoints: bigint;
@@ -579,6 +690,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async submitWithdrawRequest(arg0: string, arg1: bigint, arg2: string): Promise<WithdrawRequest> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.submitWithdrawRequest(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.submitWithdrawRequest(arg0, arg1, arg2);
+            return result;
+        }
+    }
     async updateTasks(arg0: Array<TaskUpdate>): Promise<void> {
         if (this.processError) {
             try {
@@ -590,6 +715,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateTasks(to_candid_vec_n28(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async updateWithdrawRequestStatus(arg0: Principal, arg1: bigint, arg2: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateWithdrawRequestStatus(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateWithdrawRequestStatus(arg0, arg1, arg2);
             return result;
         }
     }
@@ -625,7 +764,9 @@ function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uin
     isApproved: boolean;
     principal: [] | [Principal];
     referralCode: string;
+    groupNumber: string;
     username: string;
+    balance: bigint;
     email: string;
     whatsappNumber: string;
     passwordHash: string;
@@ -633,7 +774,9 @@ function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uin
     isApproved: boolean;
     principal?: Principal;
     referralCode: string;
+    groupNumber: string;
     username: string;
+    balance: bigint;
     email: string;
     whatsappNumber: string;
     passwordHash: string;
@@ -642,7 +785,9 @@ function from_candid_record_n10(_uploadFile: (file: ExternalBlob) => Promise<Uin
         isApproved: value.isApproved,
         principal: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.principal)),
         referralCode: value.referralCode,
+        groupNumber: value.groupNumber,
         username: value.username,
+        balance: value.balance,
         email: value.email,
         whatsappNumber: value.whatsappNumber,
         passwordHash: value.passwordHash

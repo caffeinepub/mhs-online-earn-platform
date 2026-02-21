@@ -1,10 +1,10 @@
 {
-  "frontend/src/App.tsx": "Main application component with TanStack Router setup, defining all routes including the consolidated /admin-panel route with a shared layout that includes Header, floating Facebook button, and Toaster component.",
-  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations managing user profiles, tasks, referrals, and admin functions, with the useApproveUser hook removed since users are now auto-approved.",
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup defining all routes including /mhs-admin-panel, with shared layout containing Header, floating Facebook button, and Toaster component.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including user profile, authentication, tasks, referrals, withdrawals, balance queries, and the useAddBalance mutation hook for admin balance management.",
   "frontend/src/pages/Home.tsx": "Landing page with hero section, platform stats, features, and footer with updated platform name \"MHS Online Earn Platform\" (star removed).",
-  "frontend/src/pages/Register.tsx": "User registration page with Internet Identity authentication, comprehensive form validation, proper error handling with specific error messages for duplicate entries, success toast notification showing \"Registration Successful! You can now log in\", and automatic redirect to login page after 2-second delay with users now auto-approved (isApproved: true).",
-  "frontend/src/pages/Login.tsx": "User login page using Internet Identity authentication, checking user approval status after login and redirecting approved users to dashboard or showing pending approval message.",
-  "frontend/src/pages/Dashboard.tsx": "Protected user dashboard displaying earnings, completed tasks, and referral stats, with logout functionality and task list integration.",
+  "frontend/src/pages/Register.tsx": "User registration page with improved error handling that displays specific error messages for username and email duplicates, validates all required fields including 11-digit WhatsApp numbers starting with '01', and shows success toast before redirecting to login page.",
+  "frontend/src/pages/Login.tsx": "User login page with Username and Password form fields, featuring a clean white card with rounded corners, slight transparency, and a bold Action Blue submit button with professional spacing and typography, now includes useEffect hook to detect URL search parameter and display success toast when redirected from registration.",
+  "frontend/src/pages/Dashboard.tsx": "Protected user dashboard displaying welcome message, platform statistics, prominent balance card, earnings stats, completed tasks, referral stats, action buttons, task list integration, Work Links section, and logout functionality.",
   "frontend/src/pages/AdminLogin.tsx": "Simple local admin login page with hardcoded credentials (username: 'admin', password: 'habibur123') storing authentication state in localStorage without using Internet Identity.",
   "frontend/src/pages/AdminPanel.tsx": "Combined admin authentication and dashboard page that shows a login form at /admin-panel when not authenticated (using credentials admin/habibur123) and displays the admin dashboard with user and task management tabs after successful login, with authentication state managed via localStorage.",
   "frontend/src/components/TaskList.tsx": "Component displaying list of tasks with completion status, showing task details (title, description, reward) and providing \"Complete Task\" button for open tasks with loading states.",
@@ -18,9 +18,12 @@
   "frontend/src/components/FloatingFacebookButton.tsx": "Fixed-position floating button in bottom-right corner that opens Facebook profile link in new tab, replacing the previous WhatsApp button.",
   "frontend/src/components/JobCard.tsx": "Reusable job card component that displays a single task with start button, 10-second countdown timer, and completion message, managing its own state independently.",
   "frontend/src/pages/JobTask.tsx": "Dedicated job task page displaying 10 interactive job cards in a responsive grid, each with independent 10-second countdown timers and completion messages.",
-  "frontend/src/pages/Withdraw.tsx": "Withdrawal request page with form for amount, payment method selection, and account details input, styled with blue theme and informational alerts.",
+  "frontend/src/pages/Withdraw.tsx": "Complete withdrawal page with Bengali header/banner, payout instructions, form with phone/method/amount fields, transaction history table, and WhatsApp contact link.",
   "frontend/src/pages/ReferAndEarn.tsx": "Referral program page displaying user's unique referral link, total referral count, and earnings, with authentication check and explanatory sections about how the referral system works.",
   "frontend/src/pages/PaymentProof.tsx": "Payment proof showcase page displaying recent successful withdrawals with user information, amounts, dates, and paid status badges.",
   "frontend/src/pages/Support.tsx": "Support center page with prominent Facebook contact section, response time information, 24/7 support details, and FAQ section.",
-  "frontend/index.html": "HTML entry point with updated page title \"MHS Online Earn Platform\" (star character removed from title tag)."
+  "frontend/index.html": "HTML entry point with page title \"MHS Online Earn Platform\" and script reference to main.tsx.",
+  "frontend/src/pages/MhsAdminPanel.tsx": "Secret admin page at /mhs-admin-panel with form to manually add balance to user accounts by entering username and amount, featuring validation, loading states, and success/error feedback via toast notifications.",
+  "frontend/src/hooks/useActor.ts": "Custom hook for initializing and managing the backend actor with Internet Identity authentication, handling actor creation and query invalidation when identity changes.",
+  "frontend/src/main.tsx": "Application entry point that sets up React Query and Internet Identity providers and renders the main App component."
 }

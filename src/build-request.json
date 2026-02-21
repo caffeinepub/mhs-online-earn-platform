@@ -1,73 +1,94 @@
 {
   "kind": "build_request",
-  "title": "Auto-approve new user registrations and update success messaging",
-  "projectName": "MHS Online Earn Platform",
-  "priority": "normal",
+  "title": "Fix deployment errors and redeploy Version 20",
+  "projectName": "MHS Online Earn",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-31",
-      "text": "Modify the user registration backend in backend/main.mo to set the user's approval status to 'Approved' by default when creating a new user account, eliminating the need for manual admin approval",
+      "id": "REQ-1",
+      "text": "Verify and fix the routing configuration for /mhs-admin-panel in App.tsx to ensure MhsAdminPanel component renders correctly without errors",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-8"
+        ],
+        "quotes": [
+          "Fix the code for the Admin Panel at /mhs-admin-panel"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The /mhs-admin-panel route successfully renders the MhsAdminPanel component",
+        "No console errors related to routing appear when navigating to /mhs-admin-panel",
+        "The admin panel page loads and displays the balance addition form"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Review and resolve any TypeScript compilation errors or runtime errors that could prevent successful deployment",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-8"
+        ],
+        "quotes": [
+          "Make it live now without any errors"
+        ]
+      },
+      "acceptanceCriteria": [
+        "All TypeScript files compile without errors",
+        "No runtime errors occur during application initialization",
+        "All React components render without throwing errors"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Ensure the backend canister builds successfully and all Motoko code compiles without errors",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-8"
         ],
         "quotes": [
-          "Set User Status to 'Approved' by default: When a new user registers, their account should be automatically approved. No manual action should be required from the admin."
+          "perform a clean 'Re-deploy'"
         ]
       },
       "acceptanceCriteria": [
-        "New user registrations automatically receive 'Approved' status in the backend users HashMap",
-        "The approved field is set to true during user creation",
-        "No admin action is required to activate new user accounts"
+        "Backend Motoko code compiles successfully",
+        "No syntax or type errors in main.mo",
+        "Canister deploys without errors"
       ]
     },
     {
-      "id": "REQ-32",
-      "text": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
-      "target": "frontend",
+      "id": "REQ-4",
+      "text": "Perform a clean deployment of Version 20 to production ensuring all build artifacts are regenerated and deployed successfully",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-8"
         ],
         "quotes": [
-          "Remove the 'Pending Approval' message: Instead, show a 'Registration Successful! You can now log in' message."
+          "Reset the deployment process",
+          "perform a clean 'Re-deploy' for Version 20",
+          "Make it live now"
         ]
       },
       "acceptanceCriteria": [
-        "Success toast or message displays 'Registration Successful! You can now log in' after successful registration",
-        "No pending approval messaging is shown to the user",
-        "Message appears immediately after registration completes"
-      ]
-    },
-    {
-      "id": "REQ-33",
-      "text": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "Auto-Redirect: After clicking Register, the user should be automatically redirected to the Login page."
-        ]
-      },
-      "acceptanceCriteria": [
-        "After successful registration, user is automatically navigated to /login route",
-        "Redirect occurs after the success message is displayed",
-        "No manual navigation by user is required"
+        "Version 20 deploys successfully to production",
+        "All frontend assets are accessible",
+        "Backend canister is live and responding to queries",
+        "No deployment errors occur during the process"
       ]
     }
   ],
   "constraints": [
-    "Maintain existing user data structure in backend/main.mo",
-    "Do not modify the admin panel's user management functionality",
-    "Preserve all existing user registration fields (username, WhatsApp number, group number, email, password, referral code)"
+    "Must resolve all deployment errors before going live",
+    "Ensure MhsAdminPanel component functionality is preserved",
+    "Do not modify existing authentication logic or user data structures"
   ],
   "nonGoals": [
-    "Changing the admin panel user approval interface",
-    "Modifying any other authentication or login flows",
-    "Altering the referral system or user dashboard access logic"
+    "Adding new features to the admin panel",
+    "Changing the admin panel's balance addition functionality",
+    "Modifying other routes or pages beyond fixing deployment issues"
   ],
   "imageRequirements": {
     "required": [],

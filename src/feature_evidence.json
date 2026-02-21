@@ -1,43 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-update-the-registration-success-message-in-frontend-src-pages-register-tsx-to-display-registration-successful-you-can-now-log-in-instead-of-any-pending-approval-message",
-      "featureTitle": "Update the registration success message in frontend/src/pages/Register.tsx to display 'Registration Successful! You can now log in' instead of any pending approval message",
-      "files": [
-        "frontend/src/pages/Register.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-32"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-the-registration-flow-in-frontend-src-pages-register-tsx-automatically-redirects-users-to-the-login-page-immediately-after-successful-registration",
-      "featureTitle": "Ensure the registration flow in frontend/src/pages/Register.tsx automatically redirects users to the /login page immediately after successful registration",
-      "files": [
-        "frontend/src/pages/Register.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-33"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

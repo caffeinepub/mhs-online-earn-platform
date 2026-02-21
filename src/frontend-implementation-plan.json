@@ -1,37 +1,94 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Auto-approve new user registrations and update success messaging",
+  "title": "Fix deployment errors and redeploy Version 20",
   "requirements": [
     {
-      "id": "REQ-32",
-      "summary": "Update registration success message to indicate immediate login availability",
+      "id": "REQ-1",
+      "summary": "Verify and fix the routing configuration for /mhs-admin-panel in App.tsx to ensure MhsAdminPanel component renders correctly without errors",
       "acceptanceCriteria": [
-        "Success toast or message displays 'Registration Successful! You can now log in' after successful registration",
-        "No pending approval messaging is shown to the user",
-        "Message appears immediately after registration completes"
+        "The /mhs-admin-panel route successfully renders the MhsAdminPanel component",
+        "No console errors related to routing appear when navigating to /mhs-admin-panel",
+        "The admin panel page loads and displays the balance addition form"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Register.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Update the success message after registration to display 'Registration Successful! You can now log in' instead of any pending approval messaging. Remove or update any toast notifications that reference pending approval status."
+          "description": "Review and fix the route configuration for /mhs-admin-panel to ensure proper component rendering. Verify that the MhsAdminPanel component is correctly imported and the route definition follows TanStack Router conventions. Ensure the route is properly integrated with the shared Layout component containing Header, FloatingFacebookButton, and Toaster."
+        },
+        {
+          "path": "frontend/src/pages/MhsAdminPanel.tsx",
+          "operation": "modify",
+          "description": "Review the MhsAdminPanel component for any TypeScript errors, missing imports, or runtime issues. Ensure the component properly implements the balance addition form with username and amount inputs, uses the appropriate backend mutation hook from useQueries.ts (addBalance), and includes proper error handling and loading states."
         }
       ]
     },
     {
-      "id": "REQ-33",
-      "summary": "Implement automatic redirect to login page after successful registration",
+      "id": "REQ-2",
+      "summary": "Review and resolve any TypeScript compilation errors or runtime errors that could prevent successful deployment",
       "acceptanceCriteria": [
-        "After successful registration, user is automatically navigated to /login route",
-        "Redirect occurs after the success message is displayed",
-        "No manual navigation by user is required"
+        "All TypeScript files compile without errors",
+        "No runtime errors occur during application initialization",
+        "All React components render without throwing errors"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Register.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add automatic navigation to /login route after successful registration. Use the router's navigate function to redirect users immediately after the success message is shown. Consider a brief delay (e.g., 1-2 seconds) to allow users to see the success message before redirecting."
+          "description": "Review for TypeScript compilation errors including missing imports, type mismatches in route definitions, and improper TanStack Router usage. Ensure all route components are properly typed and the Layout component structure is correct."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Review all React Query hooks for TypeScript errors, ensuring proper typing of mutations and queries. Verify that the addBalance mutation is correctly defined with appropriate parameters (username: string, amount: bigint) and proper error handling. Check that all query invalidation logic is correctly implemented."
+        },
+        {
+          "path": "frontend/src/pages/MhsAdminPanel.tsx",
+          "operation": "modify",
+          "description": "Fix any TypeScript compilation errors including type mismatches, missing type annotations, or improper hook usage. Ensure form state management is properly typed and all React hooks follow best practices."
+        },
+        {
+          "path": "frontend/src/pages/Dashboard.tsx",
+          "operation": "modify",
+          "description": "Review for any TypeScript errors or runtime issues that could prevent the dashboard from rendering. Ensure all data fetching hooks are properly implemented with loading and error states, and that navigation links are correctly configured."
+        },
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Review for TypeScript errors in actor initialization logic, Internet Identity integration, and access control setup. Ensure proper typing of the backend actor instance and correct implementation of admin token initialization."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Review the application entry point for any initialization errors, provider setup issues, or missing dependencies. Ensure React Query and Internet Identity providers are correctly configured with proper typing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Perform a clean deployment of Version 20 to production ensuring all build artifacts are regenerated and deployed successfully",
+      "acceptanceCriteria": [
+        "Version 20 deploys successfully to production",
+        "All frontend assets are accessible",
+        "Backend canister is live and responding to queries",
+        "No deployment errors occur during the process"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure all route definitions are production-ready with no debugging code or console logs that could cause issues. Verify that all imports resolve correctly and the routing structure is complete."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Verify the HTML entry point is correctly configured for production deployment with proper title, meta tags, and script references. Ensure the main.tsx import path is correct."
+        },
+        {
+          "path": "frontend/src/hooks/useActor.ts",
+          "operation": "modify",
+          "description": "Verify backend connection configuration is production-ready with correct canister IDs and network settings. Ensure the actor initialization handles production environment correctly without development-only code."
         }
       ]
     }

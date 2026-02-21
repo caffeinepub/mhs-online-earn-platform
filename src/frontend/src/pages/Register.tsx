@@ -5,13 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRegisterUser } from '../hooks/useQueries';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { toast } from 'sonner';
 import type { TasksMetadata } from '../backend';
+import { Principal } from '@dfinity/principal';
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login, identity, loginStatus } = useInternetIdentity();
   const registerMutation = useRegisterUser();
 
   const [formData, setFormData] = useState({
@@ -46,6 +45,25 @@ export default function Register() {
       return;
     }
 
+    // Relaxed WhatsApp number validation: must be exactly 11 digits starting with '01'
+    const whatsappNumber = formData.whatsappNumber.trim();
+    if (whatsappNumber.length !== 11) {
+      toast.error('WhatsApp number must be exactly 11 digits');
+      return;
+    }
+    
+    if (!whatsappNumber.startsWith('01')) {
+      toast.error('WhatsApp number must start with 01');
+      return;
+    }
+
+    // Check if all characters after '01' are digits
+    const remainingDigits = whatsappNumber.slice(2);
+    if (!/^\d+$/.test(remainingDigits)) {
+      toast.error('WhatsApp number must contain only digits');
+      return;
+    }
+
     if (!formData.groupNumber.trim()) {
       toast.error('Group number is required');
       return;
@@ -58,13 +76,6 @@ export default function Register() {
 
     if (!formData.password.trim()) {
       toast.error('Password is required');
-      return;
-    }
-
-    // Validate WhatsApp number format
-    const whatsappRegex = /^\+?[1-9]\d{1,14}$/;
-    if (!whatsappRegex.test(formData.whatsappNumber.replace(/\s/g, ''))) {
-      toast.error('Please enter a valid WhatsApp number (e.g., +1234567890)');
       return;
     }
 
@@ -81,34 +92,21 @@ export default function Register() {
       return;
     }
 
-    // First, authenticate with Internet Identity
-    if (!identity) {
-      toast.info('Please authenticate with Internet Identity to continue');
-      try {
-        await login();
-        // After login, the form will still be filled, user can click Register again
-        toast.success('Authentication successful! Now click Register again to complete registration.');
-        return;
-      } catch (error: any) {
-        console.error('Authentication error:', error);
-        toast.error('Authentication failed. Please try again.');
-        return;
-      }
-    }
-
-    // Now proceed with registration
     try {
       // Generate a unique referral code for this user
       const userReferralCode = `REF${Date.now().toString(36).toUpperCase()}`;
 
+      // Create anonymous principal for registration
+      const anonymousPrincipal = Principal.anonymous();
+
       const profile: TasksMetadata = {
         username: formData.username.trim(),
-        whatsappNumber: formData.whatsappNumber.trim(),
+        whatsappNumber: whatsappNumber,
         groupNumber: formData.groupNumber.trim(),
         email: formData.email.trim(),
         passwordHash: formData.password,
         referralCode: userReferralCode,
-        principal: identity.getPrincipal().toString(),
+        principal: anonymousPrincipal.toString(),
         isApproved: true,
         referrals: [],
         tasks: [],
@@ -118,34 +116,41 @@ export default function Register() {
 
       await registerMutation.mutateAsync(profile);
       
-      // Show success message
-      toast.success('Registration Successful! You can now log in');
+      toast.success('Registration successful! Please login with your credentials.');
       
-      // Wait 2 seconds before redirecting to allow user to see the success message
-      setTimeout(() => {
-        navigate({ to: '/login' });
-      }, 2000);
+      // Redirect to login page with success parameter
+      navigate({ 
+        to: '/login',
+        search: { registered: 'true' }
+      });
       
     } catch (error: any) {
       console.error('Registration error:', error);
-      const errorMessage = error.message || 'Registration failed';
       
-      if (errorMessage.includes('already registered')) {
-        toast.error('This account is already registered. Please login instead.');
-      } else if (errorMessage.includes('Username already exists')) {
-        toast.error('This username is already taken. Please choose another one.');
+      // Extract the error message from the error object
+      let errorMessage = 'Registration failed. Please try again.';
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      // Handle specific error cases with user-friendly messages
+      if (errorMessage.includes('Username already exists')) {
+        toast.error('This username is already taken. Please choose a different username.');
       } else if (errorMessage.includes('Email already registered')) {
-        toast.error('This email is already registered. Please use another email or login.');
-      } else if (errorMessage.includes('WhatsApp number already registered')) {
-        toast.error('This WhatsApp number is already registered. Please use another number or login.');
+        toast.error('This email is already registered. Please use a different email or login.');
+      } else if (errorMessage.includes('already registered')) {
+        toast.error('An account with these details already exists. Please login or use different details.');
       } else {
-        toast.error(`Registration failed: ${errorMessage}`);
+        // Show the actual error message for debugging
+        toast.error(errorMessage);
       }
     }
   };
 
-  const isAuthenticated = !!identity;
-  const isSubmitting = registerMutation.isPending || loginStatus === 'logging-in';
+  const isSubmitting = registerMutation.isPending;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[oklch(0.65_0.25_250)] to-[oklch(0.45_0.20_260)] flex items-center justify-center p-4">
@@ -158,12 +163,6 @@ export default function Register() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isAuthenticated && (
-              <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-2 rounded-md text-sm">
-                ✓ Authenticated with Internet Identity
-              </div>
-            )}
-
             <div>
               <Label htmlFor="username">Username *</Label>
               <Input
@@ -181,10 +180,14 @@ export default function Register() {
                 id="whatsapp"
                 type="tel"
                 required
-                placeholder="+1234567890"
+                placeholder="01XXXXXXXXX"
                 value={formData.whatsappNumber}
                 onChange={(e) => setFormData({ ...formData, whatsappNumber: e.target.value })}
+                maxLength={11}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Enter 11 digits starting with 01
+              </p>
             </div>
 
             <div>
@@ -238,13 +241,7 @@ export default function Register() {
               className="w-full bg-[oklch(0.55_0.25_250)] hover:bg-[oklch(0.50_0.25_250)]"
               disabled={isSubmitting}
             >
-              {loginStatus === 'logging-in'
-                ? 'Authenticating...'
-                : registerMutation.isPending
-                ? 'Creating Account...'
-                : isAuthenticated
-                ? 'Complete Registration'
-                : 'Authenticate & Register'}
+              {isSubmitting ? 'Creating Account...' : 'Register'}
             </Button>
 
             <div className="text-center text-sm">

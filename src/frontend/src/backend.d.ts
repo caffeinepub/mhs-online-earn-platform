@@ -26,16 +26,22 @@ export interface TaskUpdate {
     updatedTitle: string;
     taskId: bigint;
 }
-export type Time = bigint;
+export interface AuthRequest {
+    username: string;
+    password: string;
+}
 export interface UserRegistration {
     isApproved: boolean;
     principal?: Principal;
     referralCode: string;
+    groupNumber: string;
     username: string;
+    balance: bigint;
     email: string;
     whatsappNumber: string;
     passwordHash: string;
 }
+export type Time = bigint;
 export interface TaskCompletion {
     taskId: bigint;
     timestamp: Time;
@@ -46,6 +52,19 @@ export interface Task {
     reward: bigint;
     title: string;
     description: string;
+}
+export interface WithdrawRequest {
+    id: bigint;
+    status: string;
+    paymentMethod: string;
+    submitTime: Time;
+    userPrincipal: Principal;
+    phoneNumber: string;
+    amount: bigint;
+}
+export interface AuthResponse {
+    errorMessage: string;
+    success: boolean;
 }
 export enum TaskStatus {
     open = "open",
@@ -58,14 +77,19 @@ export enum UserRole {
     guest = "guest"
 }
 export interface backendInterface {
+    addBalance(username: string, amount: bigint): Promise<void>;
     addTask(task: Task): Promise<void>;
-    addUserRegistration(id: string, username: string, whatsappNumber: string, email: string, passwordHash: string, referralCode: string, approved: boolean, principal: Principal | null): Promise<void>;
+    addUserRegistration(id: string, username: string, whatsappNumber: string, groupNumber: string, email: string, passwordHash: string, referralCode: string, approved: boolean, principal: Principal | null): Promise<void>;
+    approveUser(username: string, approved: boolean): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    authenticate(credentials: AuthRequest): Promise<AuthResponse>;
     completeTask(taskId: bigint): Promise<void>;
     deleteTask(taskId: bigint): Promise<void>;
     getAllRegistrations(): Promise<Array<UserRegistration>>;
     getAllTasks(): Promise<Array<Task>>;
     getAllUsers(): Promise<Array<TasksMetadata>>;
+    getAllWithdrawRequests(): Promise<Array<[Principal, Array<WithdrawRequest>]>>;
+    getBalance(): Promise<bigint>;
     getCallerUserProfile(): Promise<TasksMetadata | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCompletedTasks(user: Principal): Promise<Array<bigint>>;
@@ -82,6 +106,7 @@ export interface backendInterface {
     getTasksByRewardForCaller(): Promise<Array<Task>>;
     getUserPoints(user: Principal): Promise<bigint>;
     getUserProfile(user: Principal): Promise<TasksMetadata | null>;
+    getUserWithdrawHistory(): Promise<Array<WithdrawRequest>>;
     getWeeklyTaskStats(user: Principal): Promise<{
         completedTasks: bigint;
         totalPoints: bigint;
@@ -92,5 +117,7 @@ export interface backendInterface {
     logout(): Promise<void>;
     registerUser(profile: TasksMetadata): Promise<void>;
     saveCallerUserProfile(profile: TasksMetadata): Promise<void>;
+    submitWithdrawRequest(phoneNumber: string, amount: bigint, paymentMethod: string): Promise<WithdrawRequest>;
     updateTasks(taskUpdates: Array<TaskUpdate>): Promise<void>;
+    updateWithdrawRequestStatus(userPrincipal: Principal, requestId: bigint, newStatus: string): Promise<void>;
 }
